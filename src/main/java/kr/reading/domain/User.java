@@ -1,13 +1,16 @@
 package kr.reading.domain;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import java.time.LocalDate;
 import java.util.Objects;
 
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ToString(callSuper = true)
 @Entity
 public class User extends BaseEntity {
@@ -23,6 +26,24 @@ public class User extends BaseEntity {
     private String favoriteSub; // 관심 장르
     private String profileSrc; // 프로필 이미지
     private String nickname; // 닉네임
+
+    private User(String userId, String userPw, String email, String phone, LocalDate birthday,
+                 String favoriteSub, String profileSrc, String nickname
+    ) {
+        this.userId = userId;
+        this.userPw = userPw;
+        this.email = email;
+        this.phone = phone;
+        this.birthday = birthday;
+        this.favoriteSub = favoriteSub;
+        this.profileSrc = profileSrc;
+        this.nickname = nickname;
+    }
+
+    public static User of(String userId, String userPw, String email, String phone, LocalDate birthday,
+                          String favoriteSub, String profileSrc, String nickname) {
+        return new User(userId, userPw, email, phone, birthday, favoriteSub, profileSrc, nickname);
+    }
 
     @Override
     public boolean equals(Object o) {
