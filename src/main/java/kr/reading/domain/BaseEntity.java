@@ -24,8 +24,8 @@ public class BaseEntity {
     private LocalDateTime createdAt; // 생성일시
 
     @CreatedBy
-    @Column(nullable = false, length = 100, updatable = false)
-    private String createdBy; // 생성자
+    @Column(nullable = false, updatable = false)
+    private Long createdBy; // 생성자
 
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     @LastModifiedDate
@@ -33,8 +33,8 @@ public class BaseEntity {
     private LocalDateTime modifiedAt; // 수정일시
 
     @LastModifiedBy
-    @Column(nullable = false, length = 100)
-    private String modifiedBy; // 수정자
+    @Column(nullable = false)
+    private Long modifiedBy; // 수정자
 
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     @Column(insertable = false)
