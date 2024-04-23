@@ -22,6 +22,18 @@ public record UserDto(
         LocalDateTime deletedAt
 ) {
 
+    public static UserDto of(Long id,
+                             String userId,
+                             String userPw,
+                             String email,
+                             String phone,
+                             LocalDate birthday,
+                             String favoriteSub,
+                             String profileSrc,
+                             String nickname) {
+        return new UserDto(id, userId, userPw, email, phone, birthday, favoriteSub, profileSrc, nickname, null, null, null, null, null);
+    }
+
     public static UserDto of(String userId,
                              String userPw,
                              String email,
@@ -30,7 +42,7 @@ public record UserDto(
                              String favoriteSub,
                              String profileSrc,
                              String nickname) {
-        return new UserDto(null, userId, userPw, email, phone, birthday, favoriteSub, profileSrc, nickname, null, null, null, null, null);
+        return UserDto.of(null, userId, userPw, email, phone, birthday, favoriteSub, profileSrc, nickname);
     }
 
     public static UserDto of(String userId,
@@ -55,9 +67,9 @@ public record UserDto(
                 entity.getProfileSrc(),
                 entity.getNickname(),
                 entity.getCreatedAt(),
-                Long.valueOf(entity.getCreatedBy()),
+                entity.getCreatedBy(),
                 entity.getModifiedAt(),
-                Long.valueOf(entity.getModifiedBy()),
+                entity.getModifiedBy(),
                 entity.getDeletedAt()
         );
     }
