@@ -17,7 +17,7 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping("/logout-success")
-    public ResponseEntity<ResponseDTO<String>> root() {
+    public ResponseEntity<ResponseDTO<String>> logoutSuccess() {
         return ResponseEntity.ok(ResponseDTO.okWithData("로그아웃 성공"));
     }
 
