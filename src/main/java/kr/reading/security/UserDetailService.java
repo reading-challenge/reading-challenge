@@ -14,7 +14,7 @@ public class UserDetailService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) {
-        return userRepository.findByUserId(username)
+        return userRepository.findByUserIdAndDeletedAtIsNull(username)
                 .map(PrincipalDetails::from)
                 .orElseThrow(() -> new UsernameNotFoundException("계정을 찾을 수 없습니다."));
     }
