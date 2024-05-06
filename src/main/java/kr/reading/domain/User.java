@@ -25,7 +25,7 @@ public class User extends BaseEntity {
     private LocalDate birthday; // 생년월일
     private String favoriteSub; // 관심 장르
     private String profileSrc; // 프로필 이미지
-    private String nickname; // 닉네임
+    @Column(unique = true) private String nickname; // 닉네임
 
     private User(String userId, String userPw, String email, String phone, LocalDate birthday,
                  String favoriteSub, String profileSrc, String nickname
@@ -43,6 +43,10 @@ public class User extends BaseEntity {
     public static User of(String userId, String userPw, String email, String phone, LocalDate birthday,
                           String favoriteSub, String profileSrc, String nickname) {
         return new User(userId, userPw, email, phone, birthday, favoriteSub, profileSrc, nickname);
+    }
+
+    public void encodedPassword(String encodedPassword) {
+        this.userPw = encodedPassword;
     }
 
     @Override
