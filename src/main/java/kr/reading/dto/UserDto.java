@@ -75,6 +75,7 @@ public record UserDto(
     }
 
     public User toEntity() {
-        return User.of(userId, userPw, email, phone, birthday, favoriteSub, profileSrc, nickname);
+        return User.of(id, userId, userPw, email, phone, birthday, favoriteSub, profileSrc, nickname);
     }
+
 }
