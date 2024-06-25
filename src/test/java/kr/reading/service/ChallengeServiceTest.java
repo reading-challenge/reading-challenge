@@ -10,12 +10,15 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 
@@ -40,6 +43,21 @@ class ChallengeServiceTest {
         // Then
         assertThat(result.id()).isEqualTo(savedChallenge.getId());
         then(challengeRepository).should().save(challenge);
+    }
+
+    @DisplayName("페이징 정보를 제공하면, 페이징 된 챌린지들을 반환한다.")
+    @Test
+    void givenPageInfo_whenGettingChallenges_thenReturnChallengeInfos() {
+        // Given
+        Pageable pageable = Pageable.ofSize(10);
+        given(challengeRepository.findAllByDeletedAtIsNull(any(Pageable.class))).willReturn(Page.empty());
+
+        // When
+        Page<ChallengeDto> result = sut.getChallenges(pageable);
+
+        // Then
+        assertThat(result).isEqualTo(Page.empty());
+        then(challengeRepository).should().findAllByDeletedAtIsNull(any(Pageable.class));
     }
 
     private Challenge createSavedChallenge(Challenge challenge, Long id) {

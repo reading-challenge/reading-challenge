@@ -13,8 +13,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.TestExecutionEvent;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -24,6 +27,7 @@ import java.time.LocalDateTime;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -47,7 +51,7 @@ class ChallengeControllerTest {
         ChallengeDto challengeDto = createChallengeDto();
         given(challengeService.createChallenge(any(ChallengeDto.class))).willReturn(challengeDto);
 
-        // When
+        // When & Then
         mvc.perform(post("/challenges")
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(jsonDataEncoder.encode(challengeCreationRequestDto)))
@@ -55,9 +59,24 @@ class ChallengeControllerTest {
                 .andExpect(jsonPath("$.code").value(200))
                 .andExpect(jsonPath("$.data").exists())
                 .andExpect(jsonPath("$.message").isEmpty());
-
-        // Then
         then(challengeService).should().createChallenge(any(ChallengeDto.class));
+    }
+
+    @WithMockUser
+    @DisplayName("챌린지 조회 - 성공")
+    @Test
+    void givenNothing_whenGetting_thenSucceeded() throws Exception {
+        // Given
+        given(challengeService.getChallenges(any(Pageable.class))).willReturn(Page.empty());
+
+        // When & Then
+        mvc.perform(get("/challenges")
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(200))
+                .andExpect(jsonPath("$.data").exists())
+                .andExpect(jsonPath("$.message").isEmpty());
+        then(challengeService).should().getChallenges(any(Pageable.class));
     }
 
     private ChallengeDto createChallengeDto() {
