@@ -45,7 +45,7 @@ class ChallengeControllerTest {
     @WithUserDetails(value = "user1", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     @DisplayName("챌린지 생성 - 성공")
     @Test
-    void giveChallengeInfo_whenCreating_thenSucceeded() throws Exception {
+    void giveChallengeInfo_whenCreatingChallenge_thenSucceeded() throws Exception {
         // Given
         ChallengeCreationRequestDto challengeCreationRequestDto = createChallengeRequestDto();
         ChallengeDto challengeDto = createChallengeDto();
@@ -65,7 +65,7 @@ class ChallengeControllerTest {
     @WithMockUser
     @DisplayName("챌린지 조회 - 성공")
     @Test
-    void givenNothing_whenGetting_thenSucceeded() throws Exception {
+    void givenNothing_whenGettingChallenges_thenSucceeded() throws Exception {
         // Given
         given(challengeService.getChallenges(any(Pageable.class))).willReturn(Page.empty());
 
