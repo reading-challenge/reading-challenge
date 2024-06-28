@@ -21,6 +21,7 @@ public class ChallengeService {
         return ChallengeDto.from(challengeRepository.save(challenge));
     }
 
+    @Transactional(readOnly = true)
     public Page<ChallengeDto> getChallenges(Pageable pageable) {
         return challengeRepository.findAllByDeletedAtIsNull(pageable).map(ChallengeDto::from);
     }
