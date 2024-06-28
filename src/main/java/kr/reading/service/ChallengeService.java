@@ -2,6 +2,7 @@ package kr.reading.service;
 
 import kr.reading.domain.Challenge;
 import kr.reading.dto.ChallengeDto;
+import kr.reading.global.exception.ChallengeNotFoundException;
 import kr.reading.repository.ChallengeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -23,7 +24,15 @@ public class ChallengeService {
 
     @Transactional(readOnly = true)
     public Page<ChallengeDto> getChallenges(Pageable pageable) {
-        return challengeRepository.findAllByDeletedAtIsNull(pageable).map(ChallengeDto::from);
+        return challengeRepository.findAllByDeletedAtIsNull(pageable)
+                .map(ChallengeDto::from);
+    }
+
+    @Transactional(readOnly = true)
+    public ChallengeDto getChallenge(Long id) {
+        Challenge challenge = challengeRepository.findByIdAndDeletedAtIsNull(id)
+                .orElseThrow(() -> new ChallengeNotFoundException());
+        return ChallengeDto.from(challenge);
     }
 
 }
