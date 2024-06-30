@@ -38,5 +38,11 @@ public class ChallengeController {
         return ResponseEntity.ok(ResponseDTO.okWithData(challenges));
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<ResponseDTO<ChallengeResponseDto>> getChallenge(@PathVariable("id") Long id) {
+        ChallengeResponseDto challenge = ChallengeResponseDto.from(challengeService.getChallenge(id));
+        return ResponseEntity.ok(ResponseDTO.okWithData(challenge));
+    }
+
 }
 

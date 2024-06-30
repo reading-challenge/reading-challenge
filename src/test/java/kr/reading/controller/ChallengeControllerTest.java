@@ -6,6 +6,8 @@ import kr.reading.config.TestSecurityConfig;
 import kr.reading.dto.ChallengeDto;
 import kr.reading.dto.UserDto;
 import kr.reading.dto.request.ChallengeCreationRequestDto;
+import kr.reading.global.exception.ChallengeNotFoundException;
+import kr.reading.global.exception.InactiveUserException;
 import kr.reading.service.ChallengeService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -25,10 +27,10 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -36,6 +38,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Import({TestSecurityConfig.class, JsonDataEncoder.class})
 @WebMvcTest(ChallengeController.class)
 class ChallengeControllerTest {
+
+    private static final Object CHALLENGE_NOT_FOUND_MSG = "챌린지가 존재하지 않습니다.";
 
     @Autowired private MockMvc mvc;
     @Autowired private JsonDataEncoder jsonDataEncoder;
@@ -45,7 +49,7 @@ class ChallengeControllerTest {
     @WithUserDetails(value = "user1", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     @DisplayName("챌린지 생성 - 성공")
     @Test
-    void giveChallengeInfo_whenCreating_thenSucceeded() throws Exception {
+    void giveChallengeInfo_whenCreatingChallenge_thenSucceeded() throws Exception {
         // Given
         ChallengeCreationRequestDto challengeCreationRequestDto = createChallengeRequestDto();
         ChallengeDto challengeDto = createChallengeDto();
@@ -65,7 +69,7 @@ class ChallengeControllerTest {
     @WithMockUser
     @DisplayName("챌린지 조회 - 성공")
     @Test
-    void givenNothing_whenGetting_thenSucceeded() throws Exception {
+    void givenNothing_whenGettingChallenges_thenSucceeded() throws Exception {
         // Given
         given(challengeService.getChallenges(any(Pageable.class))).willReturn(Page.empty());
 
@@ -77,6 +81,42 @@ class ChallengeControllerTest {
                 .andExpect(jsonPath("$.data").exists())
                 .andExpect(jsonPath("$.message").isEmpty());
         then(challengeService).should().getChallenges(any(Pageable.class));
+    }
+
+    @WithMockUser
+    @DisplayName("챌린지 상세 조회 - 성공")
+    @Test
+    void givenChallengeId_whenGettingChallenge_thenSucceeded() throws Exception {
+        // Given
+        ChallengeDto challengeDto = createChallengeDto();
+        given(challengeService.getChallenge(anyLong())).willReturn(challengeDto);
+
+        // When & then
+        mvc.perform(get("/challenges/"+challengeDto.id()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(200))
+                .andExpect(jsonPath("$.data").exists())
+                .andExpect(jsonPath("$.message").isEmpty());
+
+        then(challengeService).should().getChallenge(anyLong());
+    }
+
+    @WithMockUser
+    @DisplayName("챌린지 상세 조회 - 실패")
+    @Test
+    void givenChallengeId_whenGettingChallenge_thenFailed() throws Exception {
+        // Given
+        ChallengeDto challengeDto = createChallengeDto();
+        given(challengeService.getChallenge(anyLong())).willThrow(new ChallengeNotFoundException());
+
+        // When & then
+        mvc.perform(get("/challenges/"+challengeDto.id()))
+                .andExpect(status().is4xxClientError())
+                .andExpect(jsonPath("$.code").value(400))
+                .andExpect(jsonPath("$.data").isEmpty())
+                .andExpect(jsonPath("$.message").value(CHALLENGE_NOT_FOUND_MSG));
+
+        then(challengeService).should().getChallenge(anyLong());
     }
 
     private ChallengeDto createChallengeDto() {
