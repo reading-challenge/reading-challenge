@@ -3,6 +3,7 @@ package kr.reading.service;
 import kr.reading.domain.Challenge;
 import kr.reading.dto.ChallengeDto;
 import kr.reading.dto.UserDto;
+import kr.reading.global.exception.ChallengeNotFoundException;
 import kr.reading.repository.ChallengeRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -10,12 +11,18 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 
@@ -42,7 +49,61 @@ class ChallengeServiceTest {
         then(challengeRepository).should().save(challenge);
     }
 
+    @DisplayName("페이징 정보를 제공하면, 페이징 된 챌린지들을 반환한다.")
+    @Test
+    void givenPageInfo_whenGettingChallenges_thenReturnChallengeInfos() {
+        // Given
+        Pageable pageable = Pageable.ofSize(10);
+        given(challengeRepository.findAllByDeletedAtIsNull(any(Pageable.class))).willReturn(Page.empty());
+
+        // When
+        Page<ChallengeDto> result = sut.getChallenges(pageable);
+
+        // Then
+        assertThat(result).isEqualTo(Page.empty());
+        then(challengeRepository).should().findAllByDeletedAtIsNull(any(Pageable.class));
+    }
+
+    @DisplayName("챌린지 ID를 제공하면, 해당 챌린지를 반환한다.")
+    @Test
+    void givenChallengeId_whenGettingChallenge_thenReturnChallengeInfo() {
+        // Given
+        Long challengeId = 1L;
+        Challenge challenge = createSavedChallenge(challengeId);
+        given(challengeRepository.findByIdAndDeletedAtIsNull(anyLong())).willReturn(Optional.ofNullable(challenge));
+
+        // When
+        ChallengeDto result = sut.getChallenge(challengeId);
+
+        // Then
+        assertThat(result.id()).isEqualTo(challengeId);
+        then(challengeRepository).should().findByIdAndDeletedAtIsNull(anyLong());
+    }
+
+    @DisplayName("존재하지 않는 챌린지 ID를 제공하면, 예외가 발생한다.")
+    @Test
+    void givenChallengeId_whenGettingChallenge_thenThrowException() {
+        // Given
+        Long challengeId = 1L;
+        given(challengeRepository.findByIdAndDeletedAtIsNull(anyLong())).willReturn(Optional.ofNullable(null));
+
+        // When
+        ChallengeNotFoundException exception = assertThrows(ChallengeNotFoundException.class,
+                () -> sut.getChallenge(challengeId)
+        );
+
+        // Then
+        assertThat(exception).isInstanceOf(ChallengeNotFoundException.class);
+        then(challengeRepository).should().findByIdAndDeletedAtIsNull(anyLong());
+    }
+
     private Challenge createSavedChallenge(Challenge challenge, Long id) {
+        ReflectionTestUtils.setField(challenge, "id", id);
+        return challenge;
+    }
+
+    private Challenge createSavedChallenge(Long id) {
+        Challenge challenge = createChallengeDto().toEntity();
         ReflectionTestUtils.setField(challenge, "id", id);
         return challenge;
     }
