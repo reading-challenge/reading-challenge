@@ -1,12 +1,10 @@
 spring:
-  config:
-    import: optional:file:.env[.properties]
-
   datasource:
-    url: jdbc:mysql://localhost:${LOCAL_MYSQL_PORT}/reading_challenge?serverTimezone=UTC
+    url: ${DB_URL}
     username: ${LOCAL_MYSQL_USERNAME}
     password: ${LOCAL_MYSQL_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
+
   jpa:
     open-in-view: false   # false로 지정하면 영속성 컨텍스트의 생존범위가 트랜잭션 범위로 줄어듬. 그로인해 성능 향상 (원래는 컨트롤러까지 생존함, 우리는 컨트롤러에서 entity를 사용할 일이 없으니깐 false로 지정해도 되지 않을까..?)
     defer-datasource-initialization: true # sql 스크립트가 hibernate 초기화 이후 실행되도록 변경한다. (boot 2.5 부터 초기화 이전에 실행됨)
