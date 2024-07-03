@@ -54,7 +54,7 @@ public class User extends BaseEntity {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof User that)) return false;
-        return this.getId() != null && this.getId().equals(that.getUserId());
+        return this.getId() != null && this.getId().equals(that.getId());
     }
 
     @Override
