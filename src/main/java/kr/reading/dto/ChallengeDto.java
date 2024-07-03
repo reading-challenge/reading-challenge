@@ -85,6 +85,33 @@ public record ChallengeDto(
         );
     }
 
+    public static ChallengeDto of(String subject,
+                                  String title,
+                                  String intro,
+                                  String description,
+                                  Integer recruitedCnt,
+                                  LocalDateTime startDate,
+                                  LocalDateTime endDate
+    ) {
+        return ChallengeDto.of(
+                null,
+                subject,
+                title,
+                intro,
+                description,
+                recruitedCnt,
+                startDate,
+                endDate,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null
+        );
+    }
+
     public static ChallengeDto of(Long id,
                                   String subject,
                                   String title,

@@ -1,8 +1,11 @@
 package kr.reading.service;
 
 import kr.reading.domain.Challenge;
+import kr.reading.domain.User;
 import kr.reading.dto.ChallengeDto;
+import kr.reading.dto.UserDto;
 import kr.reading.global.exception.ChallengeNotFoundException;
+import kr.reading.global.exception.UserNotMatchException;
 import kr.reading.repository.ChallengeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -30,9 +33,26 @@ public class ChallengeService {
 
     @Transactional(readOnly = true)
     public ChallengeDto getChallenge(Long id) {
-        Challenge challenge = challengeRepository.findByIdAndDeletedAtIsNull(id)
-                .orElseThrow(() -> new ChallengeNotFoundException());
+        Challenge challenge = findActiveChallengeById(id);
         return ChallengeDto.from(challenge);
+    }
+
+    public ChallengeDto updateChallenge(Long challengeId, ChallengeDto dto, UserDto userDto) {
+        Challenge challenge = findActiveChallengeById(challengeId);
+        User user = userDto.toEntity();
+
+        if (!challenge.getUser().equals(user)) {
+            throw new UserNotMatchException();
+        }
+
+        challenge.update(dto.subject(), dto.title(), dto.intro(), dto.description(), dto.recruitedCnt(), dto.startDate(), dto.endDate());
+
+        return ChallengeDto.from(challenge);
+    }
+
+    private Challenge findActiveChallengeById(Long challengeId) {
+        return challengeRepository.findByIdAndDeletedAtIsNull(challengeId)
+                .orElseThrow(() -> new ChallengeNotFoundException());
     }
 
 }
