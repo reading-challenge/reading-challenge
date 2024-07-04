@@ -1,6 +1,5 @@
 package kr.reading.controller;
 
-import kr.reading.dto.ChallengeDto;
 import kr.reading.dto.request.ChallengeCreationRequestDto;
 import kr.reading.dto.request.ChallengeUpdateRequestDto;
 import kr.reading.dto.response.ChallengeResponseDto;
@@ -54,6 +53,15 @@ public class ChallengeController {
     ) {
         ChallengeResponseDto responseDto = ChallengeResponseDto.from(challengeService.updateChallenge(id, updateRequestDto.toDto(), principalDetails.toDto()));
         return ResponseEntity.ok(ResponseDTO.okWithData(responseDto));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ResponseDTO<Void>> deleteChallenge(
+            @PathVariable("id") Long id,
+            @AuthenticationPrincipal PrincipalDetails principalDetails
+    ) {
+        challengeService.deleteChallenge(id, principalDetails.toDto());
+        return ResponseEntity.ok(ResponseDTO.ok());
     }
 
 }

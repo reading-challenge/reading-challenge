@@ -55,4 +55,15 @@ public class ChallengeService {
                 .orElseThrow(() -> new ChallengeNotFoundException());
     }
 
+    public void deleteChallenge(Long challengeId, UserDto userDto) throws UserNotMatchException {
+        Challenge challenge = findActiveChallengeById(challengeId);
+        User user = userDto.toEntity();
+
+        if (!challenge.getUser().equals(user)) {
+            throw new UserNotMatchException();
+        }
+
+        challenge.delete();
+    }
+
 }
