@@ -97,6 +97,79 @@ class ChallengeServiceTest {
         then(challengeRepository).should().findByIdAndDeletedAtIsNull(anyLong());
     }
 
+    @DisplayName("챌린지 업데이트와 유저 정보가 주어지면, 챌린지 정보를 업데이트 한다.")
+    @Test
+    void givenChallengeUpdateInfoAndUserInfo_whenUpdatingChallenge_thenReturnChallengeInfo() {
+        // Given
+        Long challengeId = 1L;
+        ChallengeDto challengeDto = createChallengeDto();
+        UserDto userDto = createUserDto();
+        Challenge challenge = challengeDto.toEntity();
+        given(challengeRepository.findByIdAndDeletedAtIsNull(anyLong())).willReturn(Optional.ofNullable(challenge));
+
+        // When
+        ChallengeDto result = sut.updateChallenge(challengeId, challengeDto, userDto);
+
+        // Then
+        assertThat(result.id()).isEqualTo(challenge.getId());
+        then(challengeRepository).should().findByIdAndDeletedAtIsNull(anyLong());
+    }
+
+    @DisplayName("존재하지 않는 챌린지 정보를 업데이트 하면, 예외가 발생한다.")
+    @Test
+    void givenChallengeUpdateInfoAndUserInfo_whenUpdatingChallenge_thenThrowException() {
+        // Given
+        Long challengeId = 1L;
+        ChallengeDto challengeDto = createChallengeDto();
+        UserDto userDto = createUserDto();
+        given(challengeRepository.findByIdAndDeletedAtIsNull(anyLong())).willThrow(new ChallengeNotFoundException());
+
+        // When
+        ChallengeNotFoundException exception = assertThrows(ChallengeNotFoundException.class,
+                () -> sut.updateChallenge(challengeId, challengeDto, userDto)
+        );
+
+        // Then
+        assertThat(exception).isInstanceOf(ChallengeNotFoundException.class);
+        then(challengeRepository).should().findByIdAndDeletedAtIsNull(anyLong());
+    }
+
+    @DisplayName("삭제되지 않은 챌린지 id를 제공하면, 챌린지가 삭제된다.")
+    @Test
+    void givenChallengeId_whenDeletingChallenge_thenDeletesChallenge() {
+        // Given
+        Long challengeId = 1L;
+        Challenge challenge = createSavedChallenge(challengeId);
+        UserDto userDto = createUserDto();
+        given(challengeRepository.findByIdAndDeletedAtIsNull(anyLong())).willReturn(Optional.ofNullable(challenge));
+
+        // When
+        sut.deleteChallenge(challengeId, userDto);
+
+        // Then
+        assertThat(challenge.getDeletedAt()).isNotNull();
+        then(challengeRepository).should().findByIdAndDeletedAtIsNull(anyLong());
+    }
+
+    @DisplayName("삭제된 챌린지 id를 제공하면, 예외가 발생한다.")
+    @Test
+    void givenChallengeId_whenDeletingChallenge_thenThrowException() {
+        // Given
+        Long challengeId = 1L;
+        Challenge challenge = createSavedChallenge(challengeId);
+        UserDto userDto = createUserDto();
+        given(challengeRepository.findByIdAndDeletedAtIsNull(anyLong())).willReturn(Optional.ofNullable(null));
+
+        // When
+        ChallengeNotFoundException exception = assertThrows(ChallengeNotFoundException.class,
+                () -> sut.deleteChallenge(challengeId, userDto)
+        );
+
+        // Then
+        assertThat(exception).isInstanceOf(ChallengeNotFoundException.class);
+        then(challengeRepository).should().findByIdAndDeletedAtIsNull(anyLong());
+    }
+
     private Challenge createSavedChallenge(Challenge challenge, Long id) {
         ReflectionTestUtils.setField(challenge, "id", id);
         return challenge;

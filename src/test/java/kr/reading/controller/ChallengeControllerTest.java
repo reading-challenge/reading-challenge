@@ -6,8 +6,9 @@ import kr.reading.config.TestSecurityConfig;
 import kr.reading.dto.ChallengeDto;
 import kr.reading.dto.UserDto;
 import kr.reading.dto.request.ChallengeCreationRequestDto;
+import kr.reading.dto.request.ChallengeUpdateRequestDto;
 import kr.reading.global.exception.ChallengeNotFoundException;
-import kr.reading.global.exception.InactiveUserException;
+import kr.reading.global.exception.UserNotMatchException;
 import kr.reading.service.ChallengeService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -28,8 +29,7 @@ import java.time.LocalDateTime;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.then;
+import static org.mockito.BDDMockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -40,6 +40,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class ChallengeControllerTest {
 
     private static final Object CHALLENGE_NOT_FOUND_MSG = "챌린지가 존재하지 않습니다.";
+    private static final Object USER_NOT_MISMATCH_MSG = "유저가 일치하지 않습니다.";
 
     @Autowired private MockMvc mvc;
     @Autowired private JsonDataEncoder jsonDataEncoder;
@@ -92,7 +93,7 @@ class ChallengeControllerTest {
         given(challengeService.getChallenge(anyLong())).willReturn(challengeDto);
 
         // When & then
-        mvc.perform(get("/challenges/"+challengeDto.id()))
+        mvc.perform(get("/challenges/" + challengeDto.id()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code").value(200))
                 .andExpect(jsonPath("$.data").exists())
@@ -110,13 +111,102 @@ class ChallengeControllerTest {
         given(challengeService.getChallenge(anyLong())).willThrow(new ChallengeNotFoundException());
 
         // When & then
-        mvc.perform(get("/challenges/"+challengeDto.id()))
+        mvc.perform(get("/challenges/" + challengeDto.id()))
                 .andExpect(status().is4xxClientError())
                 .andExpect(jsonPath("$.code").value(400))
                 .andExpect(jsonPath("$.data").isEmpty())
                 .andExpect(jsonPath("$.message").value(CHALLENGE_NOT_FOUND_MSG));
 
         then(challengeService).should().getChallenge(anyLong());
+    }
+
+    @WithUserDetails(value = "user1", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @DisplayName("챌린지 업데이트 - 성공")
+    @Test
+    void giveChallengeUpdateInfo_whenUpdatingChallenge_thenSucceeded() throws Exception {
+        // Given
+        Long challengeId = 1L;
+        ChallengeUpdateRequestDto challengeUpdateRequestDto = createChallengeUpdateRequestDto();
+        ChallengeDto challengeDto = createChallengeDto();
+        given(challengeService.updateChallenge(anyLong(), any(ChallengeDto.class), any(UserDto.class)))
+                .willReturn(challengeDto);
+
+        // When & Then
+        mvc.perform(patch("/challenges/" + challengeId)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(jsonDataEncoder.encode(challengeUpdateRequestDto)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(200))
+                .andExpect(jsonPath("$.data").exists())
+                .andExpect(jsonPath("$.message").isEmpty());
+        then(challengeService).should().updateChallenge(anyLong(), any(ChallengeDto.class), any(UserDto.class));
+    }
+
+    @WithUserDetails(value = "user1", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @DisplayName("챌린지 업데이트 - 실패")
+    @Test
+    void giveChallengeUpdateInfo_whenUpdatingChallenge_thenFailed() throws Exception {
+        // Given
+        Long challengeId = 1L;
+        ChallengeUpdateRequestDto challengeUpdateRequestDto = createChallengeUpdateRequestDto();
+        given(challengeService.updateChallenge(anyLong(), any(ChallengeDto.class), any(UserDto.class)))
+                .willThrow(new UserNotMatchException());
+
+        // When & Then
+        mvc.perform(patch("/challenges/" + challengeId)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(jsonDataEncoder.encode(challengeUpdateRequestDto)))
+                .andExpect(status().is4xxClientError())
+                .andExpect(jsonPath("$.code").value(400))
+                .andExpect(jsonPath("$.data").isEmpty())
+                .andExpect(jsonPath("$.message").value(USER_NOT_MISMATCH_MSG));
+        then(challengeService).should().updateChallenge(anyLong(), any(ChallengeDto.class), any(UserDto.class));
+    }
+
+    @WithUserDetails(value = "user1", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @DisplayName("챌린지 삭제 - 성공")
+    @Test
+    void giveChallengeId_whenDeletingChallenge_thenSucceeded() throws Exception {
+        // Given
+        Long challengeId = 1L;
+        willDoNothing().given(challengeService).deleteChallenge(anyLong(), any(UserDto.class));
+
+        // When & Then
+        mvc.perform(delete("/challenges/" + challengeId))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(200))
+                .andExpect(jsonPath("$.data").isEmpty())
+                .andExpect(jsonPath("$.message").isEmpty());
+        then(challengeService).should().deleteChallenge(anyLong(), any(UserDto.class));
+    }
+
+    @WithUserDetails(value = "user1", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @DisplayName("챌린지 삭제 - 실패")
+    @Test
+    void giveChallengeId_whenDeletingChallenge_thenFailed() throws Exception {
+        // Given
+        Long challengeId = 1L;
+        willThrow(new UserNotMatchException()).given(challengeService).deleteChallenge(anyLong(), any(UserDto.class));
+
+        // When & Then
+        mvc.perform(delete("/challenges/" + challengeId))
+                .andExpect(status().is4xxClientError())
+                .andExpect(jsonPath("$.code").value(400))
+                .andExpect(jsonPath("$.data").isEmpty())
+                .andExpect(jsonPath("$.message").value(USER_NOT_MISMATCH_MSG));
+        then(challengeService).should().deleteChallenge(anyLong(), any(UserDto.class));
+    }
+
+    private ChallengeUpdateRequestDto createChallengeUpdateRequestDto() {
+        return new ChallengeUpdateRequestDto(
+                "자기계발",
+                "자기계발 독서 챌린지 제목",
+                "자기계발 독서 챌린지입니다.",
+                "챌린지에 참여해 자기계발을 해보아요.",
+                10,
+                LocalDateTime.of(2024, 5, 22, 18, 30),
+                LocalDateTime.of(2024, 10, 22, 18, 30)
+        );
     }
 
     private ChallengeDto createChallengeDto() {

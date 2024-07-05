@@ -61,6 +61,19 @@ public class Challenge extends BaseEntity {
         this.user = user;
     }
 
+    public void update(String subject, String title, String intro,
+                       String description, Integer integer,
+                       LocalDateTime startDate, LocalDateTime endDate
+    ) {
+        this.subject = subject;
+        this.title = title;
+        this.intro = intro;
+        this.description = description;
+        this.recruitedCnt = integer;
+        this.startDate = startDate;
+        this.endDate = endDate;
+    }
+
     public static Challenge of(Long id,
                                String subject,
                                String title,
@@ -102,4 +115,5 @@ public class Challenge extends BaseEntity {
     public int hashCode() {
         return Objects.hash(this.getId());
     }
+
 }
