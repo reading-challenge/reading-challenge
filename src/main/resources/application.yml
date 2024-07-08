@@ -8,7 +8,6 @@ spring:
     url: ${DB_URL}
     username: ${LOCAL_MYSQL_USERNAME}
     password: ${LOCAL_MYSQL_PASSWORD}
-    driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
     open-in-view: false   # false로 지정하면 영속성 컨텍스트의 생존범위가 트랜잭션 범위로 줄어듬. 그로인해 성능 향상 (원래는 컨트롤러까지 생존함, 우리는 컨트롤러에서 entity를 사용할 일이 없으니깐 false로 지정해도 되지 않을까..?)
@@ -19,3 +18,11 @@ spring:
       hibernate.format_sql: true # sql 문 보기 편하게 설정
       hibernate.default_batch_fetch_size: 100 # 지연로딩시 배치 사이즈를 100으로 지정
   sql.init.mode: always # 애플리케이션 구동시 sql 스크립트 항상 실행하도록 설정
+
+
+---
+
+spring:
+  config.activate.on-profile: test
+  datasource:
+    url: jdbc:h2:mem:testdb
