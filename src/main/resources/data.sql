@@ -1,5 +1,5 @@
--- user (20개)
-insert into reading_challenge.user (birthday, created_at, deleted_at, id, modified_at, phone, created_by, modified_by,
+-- user_account (20개)
+insert into user_account (birthday, created_at, deleted_at, id, modified_at, phone, created_by, modified_by,
                                     email, favorite_sub, nickname, profile_src, user_id, user_pw)
 values ('1994-11-04', '2007-05-06 00:00:00.000000', null, 1, '2011-05-22 00:00:00.000000', '010-3498-6147', '17', '6',
         'kbowra0@themeforest.net', '과학', '토끼', 'https://example.com/image2.jpg', 'kkm1234', '{noop}qwer1234!'),

@@ -1,6 +1,6 @@
 package kr.reading.security;
 
-import kr.reading.domain.User;
+import kr.reading.domain.UserAccount;
 import kr.reading.dto.UserDto;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
@@ -40,7 +40,7 @@ public record PrincipalDetails(
         );
     }
 
-    public static PrincipalDetails from(User entity) {
+    public static PrincipalDetails from(UserAccount entity) {
         return PrincipalDetails.of(
                 entity.getId(),
                 entity.getUserId(),

@@ -173,7 +173,7 @@ public record ChallengeDto(
                 entity.getModifiedAt(),
                 entity.getModifiedBy(),
                 entity.getDeletedAt(),
-                UserDto.from(entity.getUser())
+                UserDto.from(entity.getUserAccount())
         );
     }
 

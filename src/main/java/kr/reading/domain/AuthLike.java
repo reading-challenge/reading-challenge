@@ -17,7 +17,7 @@ public class AuthLike extends BaseEntity {
 
     @JoinColumn(name = "userId")
     @ManyToOne(optional = false)
-    private User user;
+    private UserAccount userAccount;
 
     @JoinColumn(name = "challengeAuthId")
     @ManyToOne(optional = false)

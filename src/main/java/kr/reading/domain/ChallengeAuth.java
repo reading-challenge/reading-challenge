@@ -22,7 +22,7 @@ public class ChallengeAuth extends BaseEntity {
 
     @JoinColumn(name = "userId")
     @ManyToOne(optional = false)
-    private User user;
+    private UserAccount userAccount;
 
     @JoinColumn(name = "challengeId")
     @ManyToOne(optional = false)

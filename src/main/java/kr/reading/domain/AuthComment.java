@@ -26,7 +26,7 @@ public class AuthComment extends BaseEntity {
 
     @JoinColumn(name = "userId")
     @ManyToOne(optional = false)
-    private User user;
+    private UserAccount userAccount;
 
     @ToString.Exclude
     @OneToMany(mappedBy = "authComment")

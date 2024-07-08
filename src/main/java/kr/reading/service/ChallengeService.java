@@ -1,7 +1,7 @@
 package kr.reading.service;
 
 import kr.reading.domain.Challenge;
-import kr.reading.domain.User;
+import kr.reading.domain.UserAccount;
 import kr.reading.dto.ChallengeDto;
 import kr.reading.dto.UserDto;
 import kr.reading.global.exception.ChallengeNotFoundException;
@@ -39,9 +39,9 @@ public class ChallengeService {
 
     public ChallengeDto updateChallenge(Long challengeId, ChallengeDto dto, UserDto userDto) {
         Challenge challenge = findActiveChallengeById(challengeId);
-        User user = userDto.toEntity();
+        UserAccount userAccount = userDto.toEntity();
 
-        if (!challenge.getUser().equals(user)) {
+        if (!challenge.getUserAccount().equals(userAccount)) {
             throw new UserNotMatchException();
         }
 
@@ -57,9 +57,9 @@ public class ChallengeService {
 
     public void deleteChallenge(Long challengeId, UserDto userDto) throws UserNotMatchException {
         Challenge challenge = findActiveChallengeById(challengeId);
-        User user = userDto.toEntity();
+        UserAccount userAccount = userDto.toEntity();
 
-        if (!challenge.getUser().equals(user)) {
+        if (!challenge.getUserAccount().equals(userAccount)) {
             throw new UserNotMatchException();
         }
 
