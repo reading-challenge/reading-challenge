@@ -1,3 +1,8 @@
+logging:
+  level:
+    kr.reading: debug
+    org.springframework.web.servlet: debug
+
 spring:
   datasource:
     url: ${DB_URL}

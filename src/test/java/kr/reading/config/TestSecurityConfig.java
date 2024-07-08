@@ -43,6 +43,7 @@ public class TestSecurityConfig {
 
     private User createUser() {
         User user = User.of(
+                1L,
                 "user1",
                 "password1",
                 "user1@email.com",

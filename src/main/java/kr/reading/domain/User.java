@@ -27,9 +27,10 @@ public class User extends BaseEntity {
     private String profileSrc; // 프로필 이미지
     @Column(unique = true) private String nickname; // 닉네임
 
-    private User(String userId, String userPw, String email, String phone, LocalDate birthday,
+    private User(Long id, String userId, String userPw, String email, String phone, LocalDate birthday,
                  String favoriteSub, String profileSrc, String nickname
     ) {
+        this.id = id;
         this.userId = userId;
         this.userPw = userPw;
         this.email = email;
@@ -40,9 +41,9 @@ public class User extends BaseEntity {
         this.nickname = nickname;
     }
 
-    public static User of(String userId, String userPw, String email, String phone, LocalDate birthday,
+    public static User of(Long id, String userId, String userPw, String email, String phone, LocalDate birthday,
                           String favoriteSub, String profileSrc, String nickname) {
-        return new User(userId, userPw, email, phone, birthday, favoriteSub, profileSrc, nickname);
+        return new User(id, userId, userPw, email, phone, birthday, favoriteSub, profileSrc, nickname);
     }
 
     public void encodedPassword(String encodedPassword) {
@@ -53,7 +54,7 @@ public class User extends BaseEntity {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof User that)) return false;
-        return this.getId() != null && this.getId().equals(that.getUserId());
+        return this.getId() != null && this.getId().equals(that.getId());
     }
 
     @Override

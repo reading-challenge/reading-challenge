@@ -62,6 +62,7 @@ class UserDetailServiceTest {
 
     private User createUser() {
         User user = User.of(
+                1L,
                 "user1",
                 "password1",
                 "user1@email.com",
@@ -71,8 +72,6 @@ class UserDetailServiceTest {
                 null,
                 "닉네임1"
         );
-
-        ReflectionTestUtils.setField(user, "id", 1L);
 
         return user;
     }
