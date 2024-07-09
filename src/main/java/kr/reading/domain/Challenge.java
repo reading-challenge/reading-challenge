@@ -32,7 +32,7 @@ public class Challenge extends BaseEntity {
 
     @JoinColumn(name = "userId")
     @ManyToOne(optional = false)
-    private User user;
+    private UserAccount userAccount;
 
     @ToString.Exclude
     @OneToMany(mappedBy = "challenge")
@@ -47,7 +47,7 @@ public class Challenge extends BaseEntity {
                       LocalDateTime startDate,
                       LocalDateTime endDate,
                       Integer hits,
-                      User user
+                      UserAccount userAccount
     ) {
         this.id = id;
         this.subject = subject;
@@ -58,7 +58,7 @@ public class Challenge extends BaseEntity {
         this.startDate = startDate;
         this.endDate = endDate;
         this.hits = hits;
-        this.user = user;
+        this.userAccount = userAccount;
     }
 
     public void update(String subject, String title, String intro,
@@ -83,7 +83,7 @@ public class Challenge extends BaseEntity {
                                LocalDateTime startDate,
                                LocalDateTime endDate,
                                Integer hits,
-                               User user
+                               UserAccount userAccount
     ) {
         return new Challenge(
                 id,
@@ -95,7 +95,7 @@ public class Challenge extends BaseEntity {
                 startDate,
                 endDate,
                 hits,
-                user
+                userAccount
         );
     }
 

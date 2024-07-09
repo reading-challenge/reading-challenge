@@ -1,6 +1,6 @@
 package kr.reading.config;
 
-import kr.reading.domain.User;
+import kr.reading.domain.UserAccount;
 import kr.reading.repository.UserRepository;
 import kr.reading.security.UserDetailService;
 import kr.reading.security.handler.CustomAccessDeniedHandler;
@@ -35,14 +35,14 @@ public class TestSecurityConfig {
 
     @BeforeTestMethod
     void securitySetUp() {
-        User user = createUser();
+        UserAccount userAccount = createUser();
 
         given(userRepository.findByUserIdAndDeletedAtIsNull(anyString()))
-                .willReturn(Optional.of(user));
+                .willReturn(Optional.of(userAccount));
     }
 
-    private User createUser() {
-        User user = User.of(
+    private UserAccount createUser() {
+        UserAccount userAccount = UserAccount.of(
                 1L,
                 "user1",
                 "password1",
@@ -54,8 +54,8 @@ public class TestSecurityConfig {
                 "닉네임1"
         );
 
-        ReflectionTestUtils.setField(user, "id", 1L);
+        ReflectionTestUtils.setField(userAccount, "id", 1L);
 
-        return user;
+        return userAccount;
     }
 }

@@ -1,6 +1,6 @@
 package kr.reading.service;
 
-import kr.reading.domain.User;
+import kr.reading.domain.UserAccount;
 import kr.reading.dto.UserDto;
 import kr.reading.global.exception.*;
 import kr.reading.repository.UserRepository;
@@ -17,7 +17,7 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
 
     @Transactional(readOnly = true)
-    public User findActiveUserById(Long id) {
+    public UserAccount findActiveUserById(Long id) {
         return userRepository.findByIdAndDeletedAtIsNull(id)
                 .orElseThrow(InactiveUserException::new);
     }
@@ -35,16 +35,17 @@ public class UserService {
             throw new NicNameExistsException();
         });
 
-        User entity = dto.toEntity();
+        UserAccount entity = dto.toEntity();
         entity.encodedPassword(passwordEncoder.encode(dto.userPw()));
-        User registerdUser = userRepository.save(entity);
+        UserAccount registeredUser = userRepository.save(entity);
 
-        return UserDto.from(registerdUser);
+        return UserDto.from(registeredUser);
     }
 
     public UserDto deleteUser(Long id) {
-        User user = findActiveUserById(id);
-        user.delete();
-        return UserDto.from(user);
+        UserAccount userAccount = findActiveUserById(id);
+        userAccount.delete();
+        return UserDto.from(userAccount);
     }
+
 }

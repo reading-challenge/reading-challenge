@@ -17,7 +17,7 @@ public class AuthCommentLike extends BaseEntity {
 
     @JoinColumn(name = "userId")
     @ManyToOne(optional = false)
-    private User user;
+    private UserAccount userAccount;
 
     @JoinColumn(name = "authCommentId")
     @ManyToOne(optional = false)

@@ -1,6 +1,6 @@
 package kr.reading.service;
 
-import kr.reading.domain.User;
+import kr.reading.domain.UserAccount;
 import kr.reading.dto.UserDto;
 import kr.reading.global.exception.EmailExistsException;
 import kr.reading.global.exception.InactiveUserException;
@@ -36,15 +36,15 @@ class UserServiceTest {
     @Test
     void givenId_whenFindActiveUserById_thenReturnsEntity() throws Exception {
         // Given
-        User user = createUser();
-        given(userRepository.findByIdAndDeletedAtIsNull(anyLong())).willReturn(Optional.of(user));
+        UserAccount userAccount = createUser();
+        given(userRepository.findByIdAndDeletedAtIsNull(anyLong())).willReturn(Optional.of(userAccount));
 
         // When
-        User resultUser = sut.findActiveUserById(user.getId());
+        UserAccount resultUser = sut.findActiveUserById(userAccount.getId());
 
         // Then
-        assertThat(resultUser.getId()).isEqualTo(user.getId());
-        then(userRepository).should().findByIdAndDeletedAtIsNull(user.getId());
+        assertThat(resultUser.getId()).isEqualTo(userAccount.getId());
+        then(userRepository).should().findByIdAndDeletedAtIsNull(userAccount.getId());
     }
 
     @DisplayName("탈퇴한 회원 id를 입력하면, 예외가 발생한다.")
@@ -68,13 +68,13 @@ class UserServiceTest {
     void givenUserInfo_whenSignup_thenSavedUserInfo() {
         // Given
         UserDto userDto = createUserDto();
-        User userEntity = userDto.toEntity();
+        UserAccount userEntity = userDto.toEntity();
 
         given(userRepository.findByUserId(anyString())).willReturn(Optional.ofNullable(null));
         given(userRepository.findByEmail(anyString())).willReturn(Optional.ofNullable(null));
         given(userRepository.findByNickname(anyString())).willReturn(Optional.ofNullable(null));
         given(passwordEncoder.encode(anyString())).willReturn("encodedPassword");
-        given(userRepository.save(any(User.class))).willReturn(userEntity);
+        given(userRepository.save(any(UserAccount.class))).willReturn(userEntity);
 
         // When
         UserDto savedUserDto = sut.signup(userDto);
@@ -84,7 +84,7 @@ class UserServiceTest {
         then(userRepository).should().findByUserId(anyString());
         then(userRepository).should().findByNickname(anyString());
         then(passwordEncoder).should().encode(anyString());
-        then(userRepository).should().save(any(User.class));
+        then(userRepository).should().save(any(UserAccount.class));
     }
 
     @DisplayName("중복된 userId를 입력하면, 예외가 발생한다.")
@@ -92,8 +92,8 @@ class UserServiceTest {
     void givenExistsUserId_whenSignup_thenThrowException() {
         // Given
         UserDto userDto = createUserDto();
-        User user = createUser();
-        given(userRepository.findByUserId(anyString())).willReturn(Optional.of(user));
+        UserAccount userAccount = createUser();
+        given(userRepository.findByUserId(anyString())).willReturn(Optional.of(userAccount));
 
         // When
         UserIdExistsException exception = assertThrows(UserIdExistsException.class,
@@ -110,9 +110,9 @@ class UserServiceTest {
     void givenExistsEmail_whenSignup_thenThrowException() {
         // Given
         UserDto userDto = createUserDto();
-        User user = createUser();
+        UserAccount userAccount = createUser();
         given(userRepository.findByUserId(anyString())).willReturn(Optional.ofNullable(null));
-        given(userRepository.findByEmail(anyString())).willReturn(Optional.ofNullable(user));
+        given(userRepository.findByEmail(anyString())).willReturn(Optional.ofNullable(userAccount));
 
         // When
         EmailExistsException exception = assertThrows(EmailExistsException.class,
@@ -129,10 +129,10 @@ class UserServiceTest {
     void givenExistsNickname_whenSignup_thenThrowException() {
         // Given
         UserDto userDto = createUserDto();
-        User user = createUser();
+        UserAccount userAccount = createUser();
         given(userRepository.findByUserId(anyString())).willReturn(Optional.ofNullable(null));
         given(userRepository.findByEmail(anyString())).willReturn(Optional.ofNullable(null));
-        given(userRepository.findByNickname(anyString())).willReturn(Optional.ofNullable(user));
+        given(userRepository.findByNickname(anyString())).willReturn(Optional.ofNullable(userAccount));
 
         // When
         NicNameExistsException exception = assertThrows(NicNameExistsException.class,
@@ -148,11 +148,11 @@ class UserServiceTest {
     @Test
     void givenId_whenDeleteUser_thenSoftDeleteUser() {
         // Given
-        User user = createUser();
-        given(userRepository.findByIdAndDeletedAtIsNull(anyLong())).willReturn(Optional.ofNullable(user));
+        UserAccount userAccount = createUser();
+        given(userRepository.findByIdAndDeletedAtIsNull(anyLong())).willReturn(Optional.ofNullable(userAccount));
 
         // When
-        UserDto userDto = sut.deleteUser(user.getId());
+        UserDto userDto = sut.deleteUser(userAccount.getId());
 
         // Then
         assertThat(userDto.deletedAt()).isNotNull();
@@ -175,8 +175,8 @@ class UserServiceTest {
         then(userRepository).should().findByIdAndDeletedAtIsNull(anyLong());
     }
 
-    private User createUser() {
-        User user = User.of(
+    private UserAccount createUser() {
+        UserAccount userAccount = UserAccount.of(
                 1L,
                 "user1",
                 "password1",
@@ -188,7 +188,7 @@ class UserServiceTest {
                 "닉네임1"
         );
 
-        return user;
+        return userAccount;
     }
 
     private UserDto createUserDto() {

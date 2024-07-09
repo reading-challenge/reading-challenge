@@ -1,18 +1,18 @@
 package kr.reading.repository;
 
-import kr.reading.domain.User;
+import kr.reading.domain.UserAccount;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
-public interface UserRepository extends JpaRepository<User, Long> {
-    Optional<User> findByUserId(String userId);
+public interface UserRepository extends JpaRepository<UserAccount, Long> {
+    Optional<UserAccount> findByUserId(String userId);
 
-    Optional<User> findByEmail(String email);
+    Optional<UserAccount> findByEmail(String email);
 
-    Optional<User> findByNickname(String nickname);
+    Optional<UserAccount> findByNickname(String nickname);
 
-    Optional<User> findByIdAndDeletedAtIsNull(Long id);
+    Optional<UserAccount> findByIdAndDeletedAtIsNull(Long id);
 
-    Optional<User> findByUserIdAndDeletedAtIsNull(String userId);
+    Optional<UserAccount> findByUserIdAndDeletedAtIsNull(String userId);
 }

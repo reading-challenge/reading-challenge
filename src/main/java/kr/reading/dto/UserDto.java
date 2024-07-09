@@ -1,6 +1,6 @@
 package kr.reading.dto;
 
-import kr.reading.domain.User;
+import kr.reading.domain.UserAccount;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -55,7 +55,7 @@ public record UserDto(
         return UserDto.of(userId, userPw, email, phone, birthday, favoriteSub, null, nickname);
     }
 
-    public static UserDto from(User entity) {
+    public static UserDto from(UserAccount entity) {
         return new UserDto(
                 entity.getId(),
                 entity.getUserId(),
@@ -74,8 +74,8 @@ public record UserDto(
         );
     }
 
-    public User toEntity() {
-        return User.of(id, userId, userPw, email, phone, birthday, favoriteSub, profileSrc, nickname);
+    public UserAccount toEntity() {
+        return UserAccount.of(id, userId, userPw, email, phone, birthday, favoriteSub, profileSrc, nickname);
     }
 
 }

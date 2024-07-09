@@ -1,7 +1,7 @@
 package kr.reading.security;
 
 
-import kr.reading.domain.User;
+import kr.reading.domain.UserAccount;
 import kr.reading.repository.UserRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -11,7 +11,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalDate;
 import java.util.Optional;
@@ -32,14 +31,14 @@ class UserDetailServiceTest {
     @Test
     void givenUsername_whenLoadUserByUsername_thenReturnsUserDetails() {
         // Given
-        User user = createUser();
-        given(userRepository.findByUserIdAndDeletedAtIsNull(anyString())).willReturn(Optional.ofNullable(user));
+        UserAccount userAccount = createUser();
+        given(userRepository.findByUserIdAndDeletedAtIsNull(anyString())).willReturn(Optional.ofNullable(userAccount));
 
         // When
-        UserDetails userDetails = sut.loadUserByUsername(user.getUserId());
+        UserDetails userDetails = sut.loadUserByUsername(userAccount.getUserId());
 
         // Then
-        assertThat(userDetails.getUsername()).isEqualTo(user.getUserId());
+        assertThat(userDetails.getUsername()).isEqualTo(userAccount.getUserId());
         then(userRepository).should().findByUserIdAndDeletedAtIsNull(anyString());
     }
 
@@ -47,12 +46,12 @@ class UserDetailServiceTest {
     @Test
     void givenInactiveUsername_whenLoadUserByUsername_thenThrowsException() {
         // Given
-        User user = createUser();
+        UserAccount userAccount = createUser();
         given(userRepository.findByUserIdAndDeletedAtIsNull(anyString())).willReturn(Optional.ofNullable(null));
 
         // When
         UsernameNotFoundException exception = assertThrows(UsernameNotFoundException.class,
-                () -> sut.loadUserByUsername(user.getUserId())
+                () -> sut.loadUserByUsername(userAccount.getUserId())
         );
 
         // Then
@@ -60,8 +59,8 @@ class UserDetailServiceTest {
         then(userRepository).should().findByUserIdAndDeletedAtIsNull(anyString());
     }
 
-    private User createUser() {
-        User user = User.of(
+    private UserAccount createUser() {
+        UserAccount userAccount = UserAccount.of(
                 1L,
                 "user1",
                 "password1",
@@ -73,7 +72,7 @@ class UserDetailServiceTest {
                 "닉네임1"
         );
 
-        return user;
+        return userAccount;
     }
 
 }

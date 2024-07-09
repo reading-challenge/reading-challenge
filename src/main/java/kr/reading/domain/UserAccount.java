@@ -13,7 +13,7 @@ import java.util.Objects;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ToString(callSuper = true)
 @Entity
-public class User extends BaseEntity {
+public class UserAccount extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -27,7 +27,7 @@ public class User extends BaseEntity {
     private String profileSrc; // 프로필 이미지
     @Column(unique = true) private String nickname; // 닉네임
 
-    private User(Long id, String userId, String userPw, String email, String phone, LocalDate birthday,
+    private UserAccount(Long id, String userId, String userPw, String email, String phone, LocalDate birthday,
                  String favoriteSub, String profileSrc, String nickname
     ) {
         this.id = id;
@@ -41,9 +41,9 @@ public class User extends BaseEntity {
         this.nickname = nickname;
     }
 
-    public static User of(Long id, String userId, String userPw, String email, String phone, LocalDate birthday,
+    public static UserAccount of(Long id, String userId, String userPw, String email, String phone, LocalDate birthday,
                           String favoriteSub, String profileSrc, String nickname) {
-        return new User(id, userId, userPw, email, phone, birthday, favoriteSub, profileSrc, nickname);
+        return new UserAccount(id, userId, userPw, email, phone, birthday, favoriteSub, profileSrc, nickname);
     }
 
     public void encodedPassword(String encodedPassword) {
@@ -53,7 +53,7 @@ public class User extends BaseEntity {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof User that)) return false;
+        if (!(o instanceof UserAccount that)) return false;
         return this.getId() != null && this.getId().equals(that.getId());
     }
 
