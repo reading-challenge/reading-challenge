@@ -50,7 +50,7 @@ public class ChallengeService {
         return ChallengeDto.from(challenge);
     }
 
-    private Challenge findActiveChallengeById(Long challengeId) {
+    public Challenge findActiveChallengeById(Long challengeId) {
         return challengeRepository.findByIdAndDeletedAtIsNull(challengeId)
                 .orElseThrow(() -> new ChallengeNotFoundException());
     }

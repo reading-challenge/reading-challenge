@@ -19,7 +19,10 @@ public enum ErrorCode {
     USER_NOT_MATCH(HttpStatus.BAD_REQUEST, "유저가 일치하지 않습니다."),
 
     // Challenge
-    CHALLENGE_NOT_FOUND(HttpStatus.BAD_REQUEST, "챌린지가 존재하지 않습니다.");
+    CHALLENGE_NOT_FOUND(HttpStatus.BAD_REQUEST, "챌린지가 존재하지 않습니다."),
+    
+    // Challenge Image
+    FILE_SAVE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "파일 저장 실패");
 
 
     private final HttpStatus httpStatus;

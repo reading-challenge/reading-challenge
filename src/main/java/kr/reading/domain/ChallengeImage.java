@@ -24,6 +24,15 @@ public class ChallengeImage extends BaseEntity {
     @ManyToOne(optional = false)
     private Challenge challenge;
 
+    private ChallengeImage(String imgSrc, Challenge challenge) {
+        this.imgSrc = imgSrc;
+        this.challenge = challenge;
+    }
+
+    public static ChallengeImage of(String imgSrc, Challenge challenge) {
+        return new ChallengeImage(imgSrc, challenge);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
