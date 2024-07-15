@@ -999,7 +999,7 @@ values (94, '2015-11-11 00:00:00.000000', null, 1, '2013-11-07 00:00:00.000000',
        (47, '2012-05-04 00:00:00.000000', null, 100, '2007-01-22 00:00:00.000000', 11, '18', '10');
 
 -- 챌린지 사진 (50개)
-insert into reading_challenge.challenge_image (challenge_id, created_at, created_by, deleted_at, id, modified_at, modified_by, img_src)
+insert into challenge_image (challenge_id, created_at, created_by, deleted_at, id, modified_at, modified_by, img_src)
 values  (39, '2023-08-04 00:00:00.000000', 11, null, 1, '2024-05-27 00:00:00.000000', 8, '/images/199.jpg'),
         (8, '2023-08-15 00:00:00.000000', 8, null, 2, '2024-06-14 00:00:00.000000', 4, '/images/048.jpg'),
         (1, '2023-08-25 00:00:00.000000', 4, null, 3, '2023-07-31 00:00:00.000000', 11, '/images/606.jpg'),
