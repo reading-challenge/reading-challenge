@@ -50,10 +50,9 @@ class ChallengeImageServiceTest {
         given(challengeImageRepository.save(any(ChallengeImage.class))).willReturn(savedChallenge);
 
         // When
-        Set<ChallengeImageDto> challengeImageDtos = sut.createChallengeImage(challengeId, images);
+        sut.createChallengeImage(challengeId, images);
 
         // Then
-        assertThat(challengeImageDtos.size()).isEqualTo(1);
         then(challengeService).should().findActiveChallengeById(anyLong());
         then(fileService).should().saveImage(any(MultipartFile.class));
         then(challengeImageRepository).should().save(any(ChallengeImage.class));
