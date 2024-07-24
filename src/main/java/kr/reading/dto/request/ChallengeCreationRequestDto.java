@@ -1,9 +1,10 @@
 package kr.reading.dto.request;
 
 import kr.reading.dto.ChallengeDto;
-import kr.reading.dto.UserDto;
+import kr.reading.dto.UserAccountDto;
 
 import java.time.LocalDateTime;
+
 
 public record ChallengeCreationRequestDto(
         String subject,
@@ -26,7 +27,7 @@ public record ChallengeCreationRequestDto(
         return new ChallengeCreationRequestDto(subject, title, intro, description, recruitedCnt, startDate, endDate);
     }
 
-    public ChallengeDto toDto(UserDto userDto) {
+    public ChallengeDto toDto(UserAccountDto userAccountDto) {
         return ChallengeDto.of(
                 subject,
                 title,
@@ -35,7 +36,7 @@ public record ChallengeCreationRequestDto(
                 recruitedCnt,
                 startDate,
                 endDate,
-                userDto
+                userAccountDto
         );
     }
 

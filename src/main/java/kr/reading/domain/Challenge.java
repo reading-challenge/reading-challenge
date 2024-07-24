@@ -38,6 +38,14 @@ public class Challenge extends BaseEntity {
     @OneToMany(mappedBy = "challenge")
     private Set<ChallengeAuth> challengeAuths = new LinkedHashSet<>();
 
+    @ToString.Exclude
+    @OneToMany(mappedBy = "challenge")
+    private Set<ChallengeImage> challengeImages = new LinkedHashSet<>();
+
+    @ToString.Exclude
+    @OneToMany(mappedBy = "challenge")
+    private Set<ChallengeUser> challengeUsers = new LinkedHashSet<>();
+
     private Challenge(Long id,
                       String subject,
                       String title,

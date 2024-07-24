@@ -4,7 +4,9 @@ package kr.reading.controller;
 import kr.reading.config.JsonDataEncoder;
 import kr.reading.config.TestSecurityConfig;
 import kr.reading.dto.ChallengeDto;
-import kr.reading.dto.UserDto;
+import kr.reading.dto.ChallengeWithImagesDto;
+import kr.reading.dto.ChallengeWithImagesWithUsersWithAuthsDto;
+import kr.reading.dto.UserAccountDto;
 import kr.reading.dto.request.ChallengeCreationRequestDto;
 import kr.reading.dto.request.ChallengeUpdateRequestDto;
 import kr.reading.global.exception.ChallengeNotFoundException;
@@ -26,6 +28,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Set;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -53,8 +56,8 @@ class ChallengeControllerTest {
     void giveChallengeInfo_whenCreatingChallenge_thenSucceeded() throws Exception {
         // Given
         ChallengeCreationRequestDto challengeCreationRequestDto = createChallengeRequestDto();
-        ChallengeDto challengeDto = createChallengeDto();
-        given(challengeService.createChallenge(any(ChallengeDto.class))).willReturn(challengeDto);
+        ChallengeWithImagesDto challengeWithImagesDto = createChallengeWithImagesDto();
+        given(challengeService.createChallenge(any(ChallengeDto.class))).willReturn(challengeWithImagesDto);
 
         // When & Then
         mvc.perform(post("/challenges")
@@ -89,11 +92,11 @@ class ChallengeControllerTest {
     @Test
     void givenChallengeId_whenGettingChallenge_thenSucceeded() throws Exception {
         // Given
-        ChallengeDto challengeDto = createChallengeDto();
-        given(challengeService.getChallenge(anyLong())).willReturn(challengeDto);
+        ChallengeWithImagesWithUsersWithAuthsDto challengeWithImagesWithUsersWithAuthsDto = createChallengeWithImagesWithUsersWithAuthsDto();
+        given(challengeService.getChallenge(anyLong())).willReturn(challengeWithImagesWithUsersWithAuthsDto);
 
         // When & then
-        mvc.perform(get("/challenges/" + challengeDto.id()))
+        mvc.perform(get("/challenges/" + challengeWithImagesWithUsersWithAuthsDto.id()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code").value(200))
                 .andExpect(jsonPath("$.data").exists())
@@ -107,7 +110,7 @@ class ChallengeControllerTest {
     @Test
     void givenChallengeId_whenGettingChallenge_thenFailed() throws Exception {
         // Given
-        ChallengeDto challengeDto = createChallengeDto();
+        ChallengeWithImagesWithUsersWithAuthsDto challengeDto = createChallengeWithImagesWithUsersWithAuthsDto();
         given(challengeService.getChallenge(anyLong())).willThrow(new ChallengeNotFoundException());
 
         // When & then
@@ -127,9 +130,9 @@ class ChallengeControllerTest {
         // Given
         Long challengeId = 1L;
         ChallengeUpdateRequestDto challengeUpdateRequestDto = createChallengeUpdateRequestDto();
-        ChallengeDto challengeDto = createChallengeDto();
-        given(challengeService.updateChallenge(anyLong(), any(ChallengeDto.class), any(UserDto.class)))
-                .willReturn(challengeDto);
+        ChallengeWithImagesDto challengeWithImagesDto = createChallengeWithImagesDto();
+        given(challengeService.updateChallenge(anyLong(), any(ChallengeDto.class), any(UserAccountDto.class)))
+                .willReturn(challengeWithImagesDto);
 
         // When & Then
         mvc.perform(patch("/challenges/" + challengeId)
@@ -139,7 +142,7 @@ class ChallengeControllerTest {
                 .andExpect(jsonPath("$.code").value(200))
                 .andExpect(jsonPath("$.data").exists())
                 .andExpect(jsonPath("$.message").isEmpty());
-        then(challengeService).should().updateChallenge(anyLong(), any(ChallengeDto.class), any(UserDto.class));
+        then(challengeService).should().updateChallenge(anyLong(), any(ChallengeDto.class), any(UserAccountDto.class));
     }
 
     @WithUserDetails(value = "user1", setupBefore = TestExecutionEvent.TEST_EXECUTION)
@@ -149,7 +152,7 @@ class ChallengeControllerTest {
         // Given
         Long challengeId = 1L;
         ChallengeUpdateRequestDto challengeUpdateRequestDto = createChallengeUpdateRequestDto();
-        given(challengeService.updateChallenge(anyLong(), any(ChallengeDto.class), any(UserDto.class)))
+        given(challengeService.updateChallenge(anyLong(), any(ChallengeDto.class), any(UserAccountDto.class)))
                 .willThrow(new UserNotMatchException());
 
         // When & Then
@@ -160,7 +163,7 @@ class ChallengeControllerTest {
                 .andExpect(jsonPath("$.code").value(400))
                 .andExpect(jsonPath("$.data").isEmpty())
                 .andExpect(jsonPath("$.message").value(USER_NOT_MISMATCH_MSG));
-        then(challengeService).should().updateChallenge(anyLong(), any(ChallengeDto.class), any(UserDto.class));
+        then(challengeService).should().updateChallenge(anyLong(), any(ChallengeDto.class), any(UserAccountDto.class));
     }
 
     @WithUserDetails(value = "user1", setupBefore = TestExecutionEvent.TEST_EXECUTION)
@@ -169,7 +172,7 @@ class ChallengeControllerTest {
     void giveChallengeId_whenDeletingChallenge_thenSucceeded() throws Exception {
         // Given
         Long challengeId = 1L;
-        willDoNothing().given(challengeService).deleteChallenge(anyLong(), any(UserDto.class));
+        willDoNothing().given(challengeService).deleteChallenge(anyLong(), any(UserAccountDto.class));
 
         // When & Then
         mvc.perform(delete("/challenges/" + challengeId))
@@ -177,7 +180,7 @@ class ChallengeControllerTest {
                 .andExpect(jsonPath("$.code").value(200))
                 .andExpect(jsonPath("$.data").isEmpty())
                 .andExpect(jsonPath("$.message").isEmpty());
-        then(challengeService).should().deleteChallenge(anyLong(), any(UserDto.class));
+        then(challengeService).should().deleteChallenge(anyLong(), any(UserAccountDto.class));
     }
 
     @WithUserDetails(value = "user1", setupBefore = TestExecutionEvent.TEST_EXECUTION)
@@ -186,7 +189,7 @@ class ChallengeControllerTest {
     void giveChallengeId_whenDeletingChallenge_thenFailed() throws Exception {
         // Given
         Long challengeId = 1L;
-        willThrow(new UserNotMatchException()).given(challengeService).deleteChallenge(anyLong(), any(UserDto.class));
+        willThrow(new UserNotMatchException()).given(challengeService).deleteChallenge(anyLong(), any(UserAccountDto.class));
 
         // When & Then
         mvc.perform(delete("/challenges/" + challengeId))
@@ -194,7 +197,7 @@ class ChallengeControllerTest {
                 .andExpect(jsonPath("$.code").value(400))
                 .andExpect(jsonPath("$.data").isEmpty())
                 .andExpect(jsonPath("$.message").value(USER_NOT_MISMATCH_MSG));
-        then(challengeService).should().deleteChallenge(anyLong(), any(UserDto.class));
+        then(challengeService).should().deleteChallenge(anyLong(), any(UserAccountDto.class));
     }
 
     private ChallengeUpdateRequestDto createChallengeUpdateRequestDto() {
@@ -209,23 +212,52 @@ class ChallengeControllerTest {
         );
     }
 
-    private ChallengeDto createChallengeDto() {
-        return ChallengeDto.of(
+    private ChallengeWithImagesWithUsersWithAuthsDto createChallengeWithImagesWithUsersWithAuthsDto() {
+        return new ChallengeWithImagesWithUsersWithAuthsDto(
                 1L,
                 "자기계발",
                 "자기계발 독서 챌린지 제목",
                 "자기계발 독서 챌린지입니다.",
                 "챌린지에 참여해 자기계발을 해보아요.",
                 10,
+                0,
                 LocalDateTime.of(2024, 5, 22, 18, 30),
                 LocalDateTime.of(2024, 10, 22, 18, 30),
-                0,
-                createUserDto()
+                null,
+                null,
+                null,
+                null,
+                null,
+                createUserDto(),
+                Set.of(),
+                Set.of(),
+                Set.of()
         );
     }
 
-    private UserDto createUserDto() {
-        return UserDto.of(
+    private ChallengeWithImagesDto createChallengeWithImagesDto() {
+        return new ChallengeWithImagesDto(
+                1L,
+                "자기계발",
+                "자기계발 독서 챌린지 제목",
+                "자기계발 독서 챌린지입니다.",
+                "챌린지에 참여해 자기계발을 해보아요.",
+                10,
+                0,
+                LocalDateTime.of(2024, 5, 22, 18, 30),
+                LocalDateTime.of(2024, 10, 22, 18, 30),
+                null,
+                null,
+                null,
+                null,
+                null,
+                createUserDto(),
+                Set.of()
+        );
+    }
+
+    private UserAccountDto createUserDto() {
+        return UserAccountDto.of(
                 1L,
                 "user1",
                 "password1",

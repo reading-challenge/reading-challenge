@@ -1,7 +1,7 @@
 package kr.reading.service;
 
 import kr.reading.domain.UserAccount;
-import kr.reading.dto.UserDto;
+import kr.reading.dto.UserAccountDto;
 import kr.reading.global.exception.EmailExistsException;
 import kr.reading.global.exception.InactiveUserException;
 import kr.reading.global.exception.NicNameExistsException;
@@ -14,7 +14,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalDate;
 import java.util.Optional;
@@ -67,8 +66,8 @@ class UserServiceTest {
     @Test
     void givenUserInfo_whenSignup_thenSavedUserInfo() {
         // Given
-        UserDto userDto = createUserDto();
-        UserAccount userEntity = userDto.toEntity();
+        UserAccountDto userAccountDto = createUserDto();
+        UserAccount userEntity = userAccountDto.toEntity();
 
         given(userRepository.findByUserId(anyString())).willReturn(Optional.ofNullable(null));
         given(userRepository.findByEmail(anyString())).willReturn(Optional.ofNullable(null));
@@ -77,10 +76,10 @@ class UserServiceTest {
         given(userRepository.save(any(UserAccount.class))).willReturn(userEntity);
 
         // When
-        UserDto savedUserDto = sut.signup(userDto);
+        UserAccountDto savedUserAccountDto = sut.signup(userAccountDto);
 
         // Then
-        assertThat(savedUserDto.userId()).isEqualTo(userEntity.getUserId());
+        assertThat(savedUserAccountDto.userId()).isEqualTo(userEntity.getUserId());
         then(userRepository).should().findByUserId(anyString());
         then(userRepository).should().findByNickname(anyString());
         then(passwordEncoder).should().encode(anyString());
@@ -91,13 +90,13 @@ class UserServiceTest {
     @Test
     void givenExistsUserId_whenSignup_thenThrowException() {
         // Given
-        UserDto userDto = createUserDto();
+        UserAccountDto userAccountDto = createUserDto();
         UserAccount userAccount = createUser();
         given(userRepository.findByUserId(anyString())).willReturn(Optional.of(userAccount));
 
         // When
         UserIdExistsException exception = assertThrows(UserIdExistsException.class,
-                () -> sut.signup(userDto)
+                () -> sut.signup(userAccountDto)
         );
 
         // Then
@@ -109,14 +108,14 @@ class UserServiceTest {
     @Test
     void givenExistsEmail_whenSignup_thenThrowException() {
         // Given
-        UserDto userDto = createUserDto();
+        UserAccountDto userAccountDto = createUserDto();
         UserAccount userAccount = createUser();
         given(userRepository.findByUserId(anyString())).willReturn(Optional.ofNullable(null));
         given(userRepository.findByEmail(anyString())).willReturn(Optional.ofNullable(userAccount));
 
         // When
         EmailExistsException exception = assertThrows(EmailExistsException.class,
-                () -> sut.signup(userDto)
+                () -> sut.signup(userAccountDto)
         );
 
         // Then
@@ -128,7 +127,7 @@ class UserServiceTest {
     @Test
     void givenExistsNickname_whenSignup_thenThrowException() {
         // Given
-        UserDto userDto = createUserDto();
+        UserAccountDto userAccountDto = createUserDto();
         UserAccount userAccount = createUser();
         given(userRepository.findByUserId(anyString())).willReturn(Optional.ofNullable(null));
         given(userRepository.findByEmail(anyString())).willReturn(Optional.ofNullable(null));
@@ -136,7 +135,7 @@ class UserServiceTest {
 
         // When
         NicNameExistsException exception = assertThrows(NicNameExistsException.class,
-                () -> sut.signup(userDto)
+                () -> sut.signup(userAccountDto)
         );
 
         // Then
@@ -152,10 +151,9 @@ class UserServiceTest {
         given(userRepository.findByIdAndDeletedAtIsNull(anyLong())).willReturn(Optional.ofNullable(userAccount));
 
         // When
-        UserDto userDto = sut.deleteUser(userAccount.getId());
+        sut.deleteUser(userAccount.getId());
 
         // Then
-        assertThat(userDto.deletedAt()).isNotNull();
         then(userRepository).should().findByIdAndDeletedAtIsNull(anyLong());
     }
 
@@ -191,8 +189,8 @@ class UserServiceTest {
         return userAccount;
     }
 
-    private UserDto createUserDto() {
-        UserDto userDto = UserDto.of(
+    private UserAccountDto createUserDto() {
+        UserAccountDto userAccountDto = UserAccountDto.of(
                 "user1",
                 "password1",
                 "user1@email.com",
@@ -203,6 +201,6 @@ class UserServiceTest {
                 "닉네임1"
         );
 
-        return userDto;
+        return userAccountDto;
     }
 }

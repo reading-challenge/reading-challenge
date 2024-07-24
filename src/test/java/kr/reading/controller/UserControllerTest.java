@@ -2,10 +2,11 @@ package kr.reading.controller;
 
 import kr.reading.config.JsonDataEncoder;
 import kr.reading.config.TestSecurityConfig;
-import kr.reading.dto.UserDto;
+import kr.reading.dto.UserAccountDto;
 import kr.reading.dto.request.SignupRequestDto;
 import kr.reading.global.exception.InactiveUserException;
 import kr.reading.global.exception.UserIdExistsException;
+import kr.reading.global.exception.UserNotMatchException;
 import kr.reading.service.UserService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -22,8 +23,7 @@ import java.time.LocalDate;
 
 
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.then;
+import static org.mockito.BDDMockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -55,9 +55,9 @@ class UserControllerTest {
     @Test
     void givenSignupInfo_whenSignup_thenSucceeded() throws Exception {
         // Given
-        UserDto userDto = createUserDto();
+        UserAccountDto userAccountDto = createUserDto();
         SignupRequestDto signupRequestDto = createSignupRequestDto();
-        given(userService.signup(any(UserDto.class))).willReturn(userDto);
+        given(userService.signup(any(UserAccountDto.class))).willReturn(userAccountDto);
 
         // When & then
         mvc.perform(post("/signup")
@@ -68,7 +68,7 @@ class UserControllerTest {
                 .andExpect(jsonPath("$.data").exists())
                 .andExpect(jsonPath("$.message").isEmpty());
 
-        then(userService).should().signup(any(UserDto.class));
+        then(userService).should().signup(any(UserAccountDto.class));
     }
 
     @DisplayName("회원가입 - 실패")
@@ -76,7 +76,7 @@ class UserControllerTest {
     void givenSignupInfo_whenSignup_thenFailed() throws Exception {
         // Given
         SignupRequestDto signupRequestDto = createSignupRequestDto();
-        given(userService.signup(any(UserDto.class))).willThrow(new UserIdExistsException());
+        given(userService.signup(any(UserAccountDto.class))).willThrow(new UserIdExistsException());
 
         // When & then
         mvc.perform(post("/signup")
@@ -87,7 +87,7 @@ class UserControllerTest {
                 .andExpect(jsonPath("$.data").isEmpty())
                 .andExpect(jsonPath("$.message").value(USERID_EXISTS_EXCEPTION_MESSAGE));
 
-        then(userService).should().signup(any(UserDto.class));
+        then(userService).should().signup(any(UserAccountDto.class));
     }
 
     @WithUserDetails(value = "user1", setupBefore = TestExecutionEvent.TEST_EXECUTION)
@@ -95,14 +95,14 @@ class UserControllerTest {
     @Test
     void givenUser_whenDeleteUser_thenSucceeded() throws Exception {
         // Given
-        UserDto userDto = createUserDto();
-        given(userService.deleteUser(anyLong())).willReturn(userDto);
+        UserAccountDto userAccountDto = createUserDto();
+        willDoNothing().given(userService).deleteUser(anyLong());
 
         // When & then
         mvc.perform(delete("/users"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code").value(200))
-                .andExpect(jsonPath("$.data").exists())
+                .andExpect(jsonPath("$.data").isEmpty())
                 .andExpect(jsonPath("$.message").isEmpty());
 
         then(userService).should().deleteUser(anyLong());
@@ -113,8 +113,8 @@ class UserControllerTest {
     @Test
     void givenInactiveUser_whenDeleteUser_thenFailed() throws Exception {
         // Given
-        UserDto userDto = createUserDto();
-        given(userService.deleteUser(anyLong())).willThrow(new InactiveUserException());
+        UserAccountDto userAccountDto = createUserDto();
+        willThrow(new InactiveUserException()).given(userService).deleteUser(anyLong());
 
         // When & then
         mvc.perform(delete("/users"))
@@ -126,8 +126,8 @@ class UserControllerTest {
         then(userService).should().deleteUser(anyLong());
     }
 
-    private UserDto createUserDto() {
-        UserDto userDto = UserDto.of(
+    private UserAccountDto createUserDto() {
+        UserAccountDto userAccountDto = UserAccountDto.of(
                 1L,
                 "user1",
                 "password1",
@@ -139,7 +139,7 @@ class UserControllerTest {
                 "닉네임"
         );
 
-        return userDto;
+        return userAccountDto;
     }
 
     private SignupRequestDto createSignupRequestDto() {

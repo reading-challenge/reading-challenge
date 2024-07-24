@@ -3,7 +3,9 @@ package kr.reading.service;
 import kr.reading.domain.Challenge;
 import kr.reading.domain.UserAccount;
 import kr.reading.dto.ChallengeDto;
-import kr.reading.dto.UserDto;
+import kr.reading.dto.ChallengeWithImagesDto;
+import kr.reading.dto.ChallengeWithImagesWithUsersWithAuthsDto;
+import kr.reading.dto.UserAccountDto;
 import kr.reading.global.exception.ChallengeNotFoundException;
 import kr.reading.global.exception.UserNotMatchException;
 import kr.reading.repository.ChallengeRepository;
@@ -20,26 +22,26 @@ public class ChallengeService {
 
     private final ChallengeRepository challengeRepository;
 
-    public ChallengeDto createChallenge(ChallengeDto dto) {
+    public ChallengeWithImagesDto createChallenge(ChallengeDto dto) {
         Challenge challenge = dto.toEntity();
-        return ChallengeDto.from(challengeRepository.save(challenge));
+        return ChallengeWithImagesDto.from(challengeRepository.save(challenge));
     }
 
     @Transactional(readOnly = true)
-    public Page<ChallengeDto> getChallenges(Pageable pageable) {
+    public Page<ChallengeWithImagesDto> getChallenges(Pageable pageable) {
         return challengeRepository.findAllByDeletedAtIsNull(pageable)
-                .map(ChallengeDto::from);
+                .map(ChallengeWithImagesDto::from);
     }
 
     @Transactional(readOnly = true)
-    public ChallengeDto getChallenge(Long id) {
+    public ChallengeWithImagesWithUsersWithAuthsDto getChallenge(Long id) {
         Challenge challenge = findActiveChallengeById(id);
-        return ChallengeDto.from(challenge);
+        return ChallengeWithImagesWithUsersWithAuthsDto.from(challenge);
     }
 
-    public ChallengeDto updateChallenge(Long challengeId, ChallengeDto dto, UserDto userDto) {
+    public ChallengeWithImagesDto updateChallenge(Long challengeId, ChallengeDto dto, UserAccountDto userAccountDto) {
         Challenge challenge = findActiveChallengeById(challengeId);
-        UserAccount userAccount = userDto.toEntity();
+        UserAccount userAccount = userAccountDto.toEntity();
 
         if (!challenge.getUserAccount().equals(userAccount)) {
             throw new UserNotMatchException();
@@ -47,7 +49,7 @@ public class ChallengeService {
 
         challenge.update(dto.subject(), dto.title(), dto.intro(), dto.description(), dto.recruitedCnt(), dto.startDate(), dto.endDate());
 
-        return ChallengeDto.from(challenge);
+        return ChallengeWithImagesDto.from(challenge);
     }
 
     public Challenge findActiveChallengeById(Long challengeId) {
@@ -55,9 +57,9 @@ public class ChallengeService {
                 .orElseThrow(() -> new ChallengeNotFoundException());
     }
 
-    public void deleteChallenge(Long challengeId, UserDto userDto) throws UserNotMatchException {
+    public void deleteChallenge(Long challengeId, UserAccountDto userAccountDto) throws UserNotMatchException {
         Challenge challenge = findActiveChallengeById(challengeId);
-        UserAccount userAccount = userDto.toEntity();
+        UserAccount userAccount = userAccountDto.toEntity();
 
         if (!challenge.getUserAccount().equals(userAccount)) {
             throw new UserNotMatchException();

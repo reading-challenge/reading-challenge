@@ -1,7 +1,7 @@
 package kr.reading.security;
 
 import kr.reading.domain.UserAccount;
-import kr.reading.dto.UserDto;
+import kr.reading.dto.UserAccountDto;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -54,8 +54,8 @@ public record PrincipalDetails(
         );
     }
 
-    public UserDto toDto() {
-        return UserDto.of(id, userId, userPw, email, phone, birthday, favoriteSub, profileSrc, nickname);
+    public UserAccountDto toDto() {
+        return UserAccountDto.of(id, userId, userPw, email, phone, birthday, favoriteSub, profileSrc, nickname);
     }
 
     @Override

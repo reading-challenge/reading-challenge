@@ -4,6 +4,7 @@ import kr.reading.dto.ChallengeDto;
 
 import java.time.LocalDateTime;
 
+
 public record ChallengeUpdateRequestDto(
         String subject,
         String title,
