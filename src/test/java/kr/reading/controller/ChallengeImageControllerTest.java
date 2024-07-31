@@ -15,12 +15,9 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.Set;
-
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.then;
+import static org.mockito.BDDMockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -42,7 +39,7 @@ class ChallengeImageControllerTest {
         // Given
         Long challengeId = 1L;
         MockMultipartFile mockFile1 = new MockMultipartFile("images", "image1.jpg", "image/jpeg", "image1".getBytes());
-        given(challengeImageService.createChallengeImage(anyLong(), anyList())).willReturn(Set.of());
+        willDoNothing().given(challengeImageService).createChallengeImage(anyLong(), anyList());
 
         // When & Then
         mvc.perform(multipart("/challenge-images/" + challengeId)
@@ -50,7 +47,7 @@ class ChallengeImageControllerTest {
                         .contentType(MediaType.MULTIPART_FORM_DATA))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code").value(200))
-                .andExpect(jsonPath("$.data").exists())
+                .andExpect(jsonPath("$.data").isEmpty())
                 .andExpect(jsonPath("$.message").isEmpty());
         then(challengeImageService).should().createChallengeImage(anyLong(), anyList());
     }
@@ -62,7 +59,7 @@ class ChallengeImageControllerTest {
         // Given
         Long challengeId = 1L;
         MockMultipartFile mockFile1 = new MockMultipartFile("images", "image1.jpg", "image/jpeg", "image1".getBytes());
-        given(challengeImageService.createChallengeImage(anyLong(), anyList())).willThrow(new FileSavedException());
+        willThrow(new FileSavedException()).given(challengeImageService).createChallengeImage(anyLong(), anyList());
 
         // When & Then
         mvc.perform(multipart("/challenge-images/" + challengeId)

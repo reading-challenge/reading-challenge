@@ -6,8 +6,8 @@ import java.time.LocalDateTime;
 
 public record ChallengeImageDto(
         Long id,
+        Long challengeId,
         String imgSrc,
-        ChallengeDto challengeDto,
         LocalDateTime createdAt,
         Long createdBy,
         LocalDateTime modifiedAt,
@@ -18,8 +18,8 @@ public record ChallengeImageDto(
     public static ChallengeImageDto from(ChallengeImage challengeImage) {
         return new ChallengeImageDto(
                 challengeImage.getId(),
+                challengeImage.getChallenge().getId(),
                 challengeImage.getImgSrc(),
-                ChallengeDto.from(challengeImage.getChallenge()),
                 challengeImage.getCreatedAt(),
                 challengeImage.getCreatedBy(),
                 challengeImage.getModifiedAt(),

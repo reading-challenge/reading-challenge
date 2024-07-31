@@ -4,8 +4,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import kr.reading.dto.request.SignupRequestDto;
-import kr.reading.dto.response.DeleteUserResponseDto;
-import kr.reading.dto.response.UserResponseDto;
+import kr.reading.dto.response.UserAccountResponseDto;
 import kr.reading.global.util.ResponseDTO;
 import kr.reading.security.PrincipalDetails;
 import kr.reading.service.UserService;
@@ -27,23 +26,23 @@ public class UserController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<ResponseDTO<UserResponseDto>> signup(@RequestBody SignupRequestDto signupRequestDto) {
-        UserResponseDto userResponseDto = UserResponseDto.from(userService.signup(signupRequestDto.toDto()));
-        return ResponseEntity.ok(ResponseDTO.okWithData(userResponseDto));
+    public ResponseEntity<ResponseDTO<UserAccountResponseDto>> signup(@RequestBody SignupRequestDto signupRequestDto) {
+        UserAccountResponseDto responseDto = UserAccountResponseDto.from(userService.signup(signupRequestDto.toDto()));
+        return ResponseEntity.ok(ResponseDTO.okWithData(responseDto));
     }
 
     @DeleteMapping("/users")
-    public ResponseEntity<ResponseDTO<DeleteUserResponseDto>> deleteUser(
+    public ResponseEntity<ResponseDTO<Void>> deleteUser(
             HttpServletRequest request,
             HttpServletResponse response,
             @AuthenticationPrincipal PrincipalDetails principalDetails
     ) {
-        DeleteUserResponseDto responseDto = DeleteUserResponseDto.from(userService.deleteUser(principalDetails.id()));
+        userService.deleteUser(principalDetails.id());
 
         deleteCookie(response);
         deleteSession(request);
 
-        return ResponseEntity.ok(ResponseDTO.okWithData(responseDto));
+        return ResponseEntity.ok(ResponseDTO.ok());
     }
 
     private void deleteCookie(HttpServletResponse response) {

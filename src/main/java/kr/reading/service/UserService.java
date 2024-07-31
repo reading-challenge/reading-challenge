@@ -1,7 +1,7 @@
 package kr.reading.service;
 
 import kr.reading.domain.UserAccount;
-import kr.reading.dto.UserDto;
+import kr.reading.dto.UserAccountDto;
 import kr.reading.global.exception.*;
 import kr.reading.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +22,7 @@ public class UserService {
                 .orElseThrow(InactiveUserException::new);
     }
 
-    public UserDto signup(UserDto dto) {
+    public UserAccountDto signup(UserAccountDto dto) {
         userRepository.findByUserId(dto.userId()).ifPresent(user -> {
             throw new UserIdExistsException();
         });
@@ -39,13 +39,12 @@ public class UserService {
         entity.encodedPassword(passwordEncoder.encode(dto.userPw()));
         UserAccount registeredUser = userRepository.save(entity);
 
-        return UserDto.from(registeredUser);
+        return UserAccountDto.from(registeredUser);
     }
 
-    public UserDto deleteUser(Long id) {
+    public void deleteUser(Long id) {
         UserAccount userAccount = findActiveUserById(id);
         userAccount.delete();
-        return UserDto.from(userAccount);
     }
 
 }

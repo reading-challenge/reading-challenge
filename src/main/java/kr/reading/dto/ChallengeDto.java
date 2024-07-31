@@ -11,32 +11,33 @@ public record ChallengeDto(
         String intro,
         String description,
         Integer recruitedCnt,
+        Integer hits,
         LocalDateTime startDate,
         LocalDateTime endDate,
-        Integer hits,
         LocalDateTime createdAt,
         Long createdBy,
         LocalDateTime modifiedAt,
         Long modifiedBy,
         LocalDateTime deletedAt,
-        UserDto userDto
+        UserAccountDto userAccountDto
 ) {
 
-    public static ChallengeDto of(Long id,
-                                  String subject,
-                                  String title,
-                                  String intro,
-                                  String description,
-                                  Integer recruitedCnt,
-                                  LocalDateTime startDate,
-                                  LocalDateTime endDate,
-                                  Integer hits,
-                                  LocalDateTime createdAt,
-                                  Long createdBy,
-                                  LocalDateTime modifiedAt,
-                                  Long modifiedBy,
-                                  LocalDateTime deletedAt,
-                                  UserDto userDto
+    public static ChallengeDto of(
+            Long id,
+            String subject,
+            String title,
+            String intro,
+            String description,
+            Integer recruitedCnt,
+            Integer hits,
+            LocalDateTime startDate,
+            LocalDateTime endDate,
+            LocalDateTime createdAt,
+            Long createdBy,
+            LocalDateTime modifiedAt,
+            Long modifiedBy,
+            LocalDateTime deletedAt,
+            UserAccountDto userAccountDto
     ) {
         return new ChallengeDto(
                 id,
@@ -45,26 +46,27 @@ public record ChallengeDto(
                 intro,
                 description,
                 recruitedCnt,
+                hits,
                 startDate,
                 endDate,
-                hits,
                 createdAt,
                 createdBy,
                 modifiedAt,
                 modifiedBy,
                 deletedAt,
-                userDto
+                userAccountDto
         );
     }
 
-    public static ChallengeDto of(String subject,
-                                  String title,
-                                  String intro,
-                                  String description,
-                                  Integer recruitedCnt,
-                                  LocalDateTime startDate,
-                                  LocalDateTime endDate,
-                                  UserDto userDto
+    public static ChallengeDto of(
+            String subject,
+            String title,
+            String intro,
+            String description,
+            Integer recruitedCnt,
+            LocalDateTime startDate,
+            LocalDateTime endDate,
+            UserAccountDto userAccountDto
     ) {
         return ChallengeDto.of(
                 null,
@@ -73,6 +75,7 @@ public record ChallengeDto(
                 intro,
                 description,
                 recruitedCnt,
+                null,
                 startDate,
                 endDate,
                 null,
@@ -80,21 +83,20 @@ public record ChallengeDto(
                 null,
                 null,
                 null,
-                null,
-                userDto
+                userAccountDto
         );
     }
 
-    public static ChallengeDto of(String subject,
-                                  String title,
-                                  String intro,
-                                  String description,
-                                  Integer recruitedCnt,
-                                  LocalDateTime startDate,
-                                  LocalDateTime endDate
+    public static ChallengeDto of(
+            String subject,
+            String title,
+            String intro,
+            String description,
+            Integer recruitedCnt,
+            LocalDateTime startDate,
+            LocalDateTime endDate
     ) {
         return ChallengeDto.of(
-                null,
                 subject,
                 title,
                 intro,
@@ -102,43 +104,7 @@ public record ChallengeDto(
                 recruitedCnt,
                 startDate,
                 endDate,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
                 null
-        );
-    }
-
-    public static ChallengeDto of(Long id,
-                                  String subject,
-                                  String title,
-                                  String intro,
-                                  String description,
-                                  Integer recruitedCnt,
-                                  LocalDateTime startDate,
-                                  LocalDateTime endDate,
-                                  Integer hits,
-                                  UserDto userDto
-    ) {
-        return ChallengeDto.of(
-                id,
-                subject,
-                title,
-                intro,
-                description,
-                recruitedCnt,
-                startDate,
-                endDate,
-                hits,
-                null,
-                null,
-                null,
-                null,
-                null,
-                userDto
         );
     }
 
@@ -153,7 +119,7 @@ public record ChallengeDto(
                 startDate,
                 endDate,
                 hits,
-                userDto.toEntity()
+                userAccountDto.toEntity()
         );
     }
 
@@ -165,15 +131,15 @@ public record ChallengeDto(
                 entity.getIntro(),
                 entity.getDescription(),
                 entity.getRecruitedCnt(),
+                entity.getHits(),
                 entity.getStartDate(),
                 entity.getEndDate(),
-                entity.getHits(),
                 entity.getCreatedAt(),
                 entity.getCreatedBy(),
                 entity.getModifiedAt(),
                 entity.getModifiedBy(),
                 entity.getDeletedAt(),
-                UserDto.from(entity.getUserAccount())
+                UserAccountDto.from(entity.getUserAccount())
         );
     }
 

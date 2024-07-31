@@ -3,7 +3,7 @@ package kr.reading.dto.request;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Past;
-import kr.reading.dto.UserDto;
+import kr.reading.dto.UserAccountDto;
 
 import java.time.LocalDate;
 
@@ -17,7 +17,7 @@ public record SignupRequestDto(
         @NotBlank(message = "필수 입력사항 입니다.") String nickname
 ) {
 
-    public UserDto toDto() {
-        return UserDto.of(userId, userPw, email, phone, birthday, favoriteSub, nickname);
+    public UserAccountDto toDto() {
+        return UserAccountDto.of(userId, userPw, email, phone, birthday, favoriteSub, nickname);
     }
 }

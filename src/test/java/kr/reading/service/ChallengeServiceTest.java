@@ -2,7 +2,9 @@ package kr.reading.service;
 
 import kr.reading.domain.Challenge;
 import kr.reading.dto.ChallengeDto;
-import kr.reading.dto.UserDto;
+import kr.reading.dto.ChallengeWithImagesDto;
+import kr.reading.dto.ChallengeWithImagesWithUsersWithAuthsDto;
+import kr.reading.dto.UserAccountDto;
 import kr.reading.global.exception.ChallengeNotFoundException;
 import kr.reading.repository.ChallengeRepository;
 import org.junit.jupiter.api.DisplayName;
@@ -42,7 +44,7 @@ class ChallengeServiceTest {
         given(challengeRepository.save(challenge)).willReturn(savedChallenge);
 
         // When
-        ChallengeDto result = sut.createChallenge(challengeDto);
+        ChallengeWithImagesDto result = sut.createChallenge(challengeDto);
 
         // Then
         assertThat(result.id()).isEqualTo(savedChallenge.getId());
@@ -57,7 +59,7 @@ class ChallengeServiceTest {
         given(challengeRepository.findAllByDeletedAtIsNull(any(Pageable.class))).willReturn(Page.empty());
 
         // When
-        Page<ChallengeDto> result = sut.getChallenges(pageable);
+        Page<ChallengeWithImagesDto> result = sut.getChallenges(pageable);
 
         // Then
         assertThat(result).isEqualTo(Page.empty());
@@ -73,7 +75,7 @@ class ChallengeServiceTest {
         given(challengeRepository.findByIdAndDeletedAtIsNull(anyLong())).willReturn(Optional.ofNullable(challenge));
 
         // When
-        ChallengeDto result = sut.getChallenge(challengeId);
+        ChallengeWithImagesWithUsersWithAuthsDto result = sut.getChallenge(challengeId);
 
         // Then
         assertThat(result.id()).isEqualTo(challengeId);
@@ -103,12 +105,12 @@ class ChallengeServiceTest {
         // Given
         Long challengeId = 1L;
         ChallengeDto challengeDto = createChallengeDto();
-        UserDto userDto = createUserDto();
+        UserAccountDto userAccountDto = createUserDto();
         Challenge challenge = challengeDto.toEntity();
         given(challengeRepository.findByIdAndDeletedAtIsNull(anyLong())).willReturn(Optional.ofNullable(challenge));
 
         // When
-        ChallengeDto result = sut.updateChallenge(challengeId, challengeDto, userDto);
+        ChallengeWithImagesDto result = sut.updateChallenge(challengeId, challengeDto, userAccountDto);
 
         // Then
         assertThat(result.id()).isEqualTo(challenge.getId());
@@ -121,12 +123,12 @@ class ChallengeServiceTest {
         // Given
         Long challengeId = 1L;
         ChallengeDto challengeDto = createChallengeDto();
-        UserDto userDto = createUserDto();
+        UserAccountDto userAccountDto = createUserDto();
         given(challengeRepository.findByIdAndDeletedAtIsNull(anyLong())).willThrow(new ChallengeNotFoundException());
 
         // When
         ChallengeNotFoundException exception = assertThrows(ChallengeNotFoundException.class,
-                () -> sut.updateChallenge(challengeId, challengeDto, userDto)
+                () -> sut.updateChallenge(challengeId, challengeDto, userAccountDto)
         );
 
         // Then
@@ -140,11 +142,11 @@ class ChallengeServiceTest {
         // Given
         Long challengeId = 1L;
         Challenge challenge = createSavedChallenge(challengeId);
-        UserDto userDto = createUserDto();
+        UserAccountDto userAccountDto = createUserDto();
         given(challengeRepository.findByIdAndDeletedAtIsNull(anyLong())).willReturn(Optional.ofNullable(challenge));
 
         // When
-        sut.deleteChallenge(challengeId, userDto);
+        sut.deleteChallenge(challengeId, userAccountDto);
 
         // Then
         assertThat(challenge.getDeletedAt()).isNotNull();
@@ -157,12 +159,12 @@ class ChallengeServiceTest {
         // Given
         Long challengeId = 1L;
         Challenge challenge = createSavedChallenge(challengeId);
-        UserDto userDto = createUserDto();
+        UserAccountDto userAccountDto = createUserDto();
         given(challengeRepository.findByIdAndDeletedAtIsNull(anyLong())).willReturn(Optional.ofNullable(null));
 
         // When
         ChallengeNotFoundException exception = assertThrows(ChallengeNotFoundException.class,
-                () -> sut.deleteChallenge(challengeId, userDto)
+                () -> sut.deleteChallenge(challengeId, userAccountDto)
         );
 
         // Then
@@ -189,15 +191,20 @@ class ChallengeServiceTest {
                 "자기계발 독서 챌린지입니다.",
                 "챌린지에 참여해 자기계발을 해보아요.",
                 10,
+                0,
                 LocalDateTime.of(2024, 5, 22, 18, 30),
                 LocalDateTime.of(2024, 10, 22, 18, 30),
-                0,
+                null,
+                null,
+                null,
+                null,
+                null,
                 createUserDto()
         );
     }
 
-    private UserDto createUserDto() {
-        return UserDto.of(
+    private UserAccountDto createUserDto() {
+        return UserAccountDto.of(
                 1L,
                 "user1",
                 "password1",

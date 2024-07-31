@@ -22,7 +22,7 @@ public class ChallengeImageService {
     private final ChallengeImageRepository challengeImageRepository;
     private final ChallengeService challengeService;
 
-    public Set<ChallengeImageDto> createChallengeImage(Long challengeId, List<MultipartFile> images) {
+    public void createChallengeImage(Long challengeId, List<MultipartFile> images) {
         Set<ChallengeImageDto> challengeImageDtos = new LinkedHashSet<>();
 
         Challenge challenge = challengeService.findActiveChallengeById(challengeId);
@@ -35,8 +35,6 @@ public class ChallengeImageService {
 
             challengeImageDtos.add(ChallengeImageDto.from(savedChallenge));
         }
-
-        return challengeImageDtos;
     }
 
 }
