@@ -16,9 +16,6 @@ public class ChallengeUser extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private LocalDateTime attendDate; // 신청날짜
-    private Boolean state; // 참여 상태
-
     @JoinColumn(name = "userId")
     @ManyToOne(optional = false)
     private UserAccount userAccount;
