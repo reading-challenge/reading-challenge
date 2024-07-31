@@ -27,16 +27,12 @@ public record ChallengeWithImagesWithUsersWithAuthsResponseDto(
 
     public record ChallengeUserResponseDto(
             Long id,
-            LocalDateTime attendDate,
-            Boolean state,
             String user
     ) {
 
         public static ChallengeUserResponseDto from(ChallengeUserDto challengeUserDto) {
             return new ChallengeUserResponseDto(
                     challengeUserDto.id(),
-                    challengeUserDto.attendDate(),
-                    challengeUserDto.state(),
                     challengeUserDto.userAccountDto().nickname()
             );
         }
