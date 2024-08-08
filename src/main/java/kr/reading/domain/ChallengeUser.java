@@ -1,14 +1,16 @@
 package kr.reading.domain;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Getter
 @ToString(callSuper = true)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 public class ChallengeUser extends BaseEntity {
 
@@ -17,12 +19,22 @@ public class ChallengeUser extends BaseEntity {
     private Long id;
 
     @JoinColumn(name = "userId")
-    @ManyToOne(optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private UserAccount userAccount;
 
     @JoinColumn(name = "challengeId")
     @ManyToOne(optional = false)
     private Challenge challenge;
+
+    private ChallengeUser(Long id, UserAccount userAccount, Challenge challenge) {
+        this.id = id;
+        this.userAccount = userAccount;
+        this.challenge = challenge;
+    }
+
+    public static ChallengeUser of(Long id, UserAccount userAccount, Challenge challenge) {
+        return new ChallengeUser(id, userAccount, challenge);
+    }
 
     @Override
     public boolean equals(Object o) {
