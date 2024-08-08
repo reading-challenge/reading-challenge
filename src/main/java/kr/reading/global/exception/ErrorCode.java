@@ -22,7 +22,10 @@ public enum ErrorCode {
     CHALLENGE_NOT_FOUND(HttpStatus.BAD_REQUEST, "챌린지가 존재하지 않습니다."),
     
     // Challenge Image
-    FILE_SAVE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "파일 저장 실패");
+    FILE_SAVE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "파일 저장 실패"),
+
+    // Challenge User
+    CHALLENGE_JOIN(HttpStatus.BAD_REQUEST, "이미 가입된 챌린지 입니다.");
 
 
     private final HttpStatus httpStatus;
