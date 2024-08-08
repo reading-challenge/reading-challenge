@@ -42,8 +42,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(ChallengeController.class)
 class ChallengeControllerTest {
 
-    private static final Object CHALLENGE_NOT_FOUND_MSG = "챌린지가 존재하지 않습니다.";
-    private static final Object USER_NOT_MISMATCH_MSG = "유저가 일치하지 않습니다.";
+    private static final String CHALLENGE_NOT_FOUND_MSG = "챌린지가 존재하지 않습니다.";
+    private static final String USER_NOT_MISMATCH_MSG = "유저가 일치하지 않습니다.";
 
     @Autowired private MockMvc mvc;
     @Autowired private JsonDataEncoder jsonDataEncoder;
