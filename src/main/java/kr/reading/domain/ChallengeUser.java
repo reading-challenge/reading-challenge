@@ -17,7 +17,7 @@ public class ChallengeUser extends BaseEntity {
     private Long id;
 
     @JoinColumn(name = "userId")
-    @ManyToOne(optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private UserAccount userAccount;
 
     @JoinColumn(name = "challengeId")

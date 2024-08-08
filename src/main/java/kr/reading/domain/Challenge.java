@@ -31,7 +31,7 @@ public class Challenge extends BaseEntity {
     private Integer hits; // 조회수
 
     @JoinColumn(name = "userId")
-    @ManyToOne(optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private UserAccount userAccount;
 
     @ToString.Exclude
